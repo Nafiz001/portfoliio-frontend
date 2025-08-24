@@ -77,9 +77,36 @@ function checkAuthStatus() {
     console.log('Checking auth status - username:', username);
     
     if (token && username) {
+        // Check if token is expired by trying to decode it (for JWT tokens)
+        if (isTokenExpired(token)) {
+            console.log('Token has expired, clearing auth');
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('username');
+            showLoginForm();
+            return;
+        }
+        
         isLoggedIn = true;
         currentUser = username;
         showDashboard();
+    }
+}
+
+// Check if JWT token is expired
+function isTokenExpired(token) {
+    try {
+        // For JWT tokens, decode the payload to check expiration
+        if (token.includes('.')) {
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            const currentTime = Math.floor(Date.now() / 1000);
+            return payload.exp && payload.exp < currentTime;
+        }
+        // For fallback tokens, consider them valid for 24 hours
+        const tokenAge = Date.now() - (localStorage.getItem('tokenTimestamp') || 0);
+        return tokenAge > (24 * 60 * 60 * 1000); // 24 hours
+    } catch (error) {
+        console.error('Error checking token expiration:', error);
+        return true; // Consider expired if we can't parse it
     }
 }
 
@@ -123,6 +150,10 @@ async function handleLogin(e) {
         if (result.Success || result.success) { // Handle both backend and fallback response formats
             isLoggedIn = true;
             currentUser = result.Username || result.username || username;
+            
+            // Store timestamp for token expiration tracking
+            localStorage.setItem('tokenTimestamp', Date.now().toString());
+            
             showDashboard();
             if (errorMessage) errorMessage.textContent = '';
         }
@@ -151,6 +182,7 @@ function logout() {
 function logout() {
     localStorage.removeItem('authToken');
     localStorage.removeItem('username');
+    localStorage.removeItem('tokenTimestamp');
     isLoggedIn = false;
     currentUser = null;
     showLoginForm();
@@ -186,6 +218,16 @@ async function handleAddProject(e) {
     e.preventDefault();
     
     console.log('Add project form submitted');
+    
+    // Check if user is logged in
+    const token = localStorage.getItem('authToken');
+    const username = localStorage.getItem('username');
+    console.log('Auth status - Token exists:', !!token, 'Username:', username);
+    
+    if (!token) {
+        alert('You must be logged in to add projects. Please log in again.');
+        return;
+    }
     
     // Get form values
     const title = document.getElementById('projectTitle').value.trim();
@@ -240,7 +282,16 @@ async function handleAddProject(e) {
         alert('Project added successfully!');
     } catch (error) {
         console.error('Error adding project:', error);
-        alert('Error adding project: ' + error.message);
+        
+        // More detailed error information
+        if (error.message.includes('401')) {
+            alert('Authentication failed. Please log in again.');
+            logout(); // Force re-login
+        } else if (error.message.includes('Failed to fetch')) {
+            alert('Network error. Please check your internet connection and try again.');
+        } else {
+            alert('Error adding project: ' + error.message);
+        }
     }
 }
 
@@ -475,6 +526,7 @@ class PortfolioAPI {
                 const fallbackToken = btoa(`${username}:${Date.now()}`);
                 localStorage.setItem('authToken', fallbackToken);
                 localStorage.setItem('username', username);
+                localStorage.setItem('tokenTimestamp', Date.now().toString());
                 return { Success: true, success: true, Token: fallbackToken, token: fallbackToken, Username: username, username };
             }
 
@@ -485,6 +537,7 @@ class PortfolioAPI {
     static logout() {
         localStorage.removeItem('authToken');
         localStorage.removeItem('username');
+        localStorage.removeItem('tokenTimestamp');
         console.log('Logged out, cleared localStorage');
     }
     
