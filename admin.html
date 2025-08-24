@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Portfolio</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .admin-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+            padding: 20px;
+        }
+        
+        .admin-card {
+            background: #1a1a1a;
+            padding: 3rem;
+            border-radius: 20px;
+            border: 1px solid #333;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+        }
+        
+        .dashboard {
+            display: none;
+            background: #1a1a1a;
+            padding: 2rem;
+            border-radius: 20px;
+            border: 1px solid #333;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+            max-width: 1200px;
+            width: 100%;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #333;
+            border-radius: 8px;
+            background: #2a2a2a;
+            color: #fff;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+        
+        .btn-admin {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #0073e6, #00a8ff);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+        }
+        
+        .nav-btn {
+            padding: 10px 20px;
+            background: #333;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 0.5rem;
+            text-decoration: none;
+        }
+        
+        .nav-btn:hover {
+            background: #0073e6;
+            color: #fff;
+            text-decoration: none;
+        }
+        
+        .logout-btn {
+            background: #ff4757;
+        }
+        
+        .project-form, .skill-form {
+            background: #2a2a2a;
+            padding: 2rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+        }
+        
+        .projects-list, .skills-list {
+            display: grid;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        
+        .project-item, .skill-item {
+            background: #333;
+            padding: 1rem;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .delete-btn {
+            background: #ff4757;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .error-message {
+            color: #ff4757;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+            text-align: center;
+        }
+        
+        .success-message {
+            color: #2ed573;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Login Form -->
+        <div id="loginForm" class="admin-card">
+            <h2 style="color: #fff; margin-bottom: 2rem;">
+                <i class="fas fa-lock"></i> Admin Login
+            </h2>
+            <form id="adminLoginForm">
+                <div class="form-group">
+                    <label style="color: #ccc;">Username</label>
+                    <input type="text" id="username" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label style="color: #ccc;">Password</label>
+                    <input type="password" id="password" class="form-control" required>
+                </div>
+                <button type="submit" class="btn-admin">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </button>
+                <div id="errorMessage" class="error-message"></div>
+            </form>
+            <div style="margin-top: 2rem; padding: 1rem; background: #333; border-radius: 8px; font-size: 0.9rem;">
+                <h4 style="color: #00a8ff; margin-bottom: 1rem;">Demo Credentials</h4>
+                <p style="color: #ccc; margin: 0.5rem 0;">Username: <strong>admin</strong> | Password: <strong>admin123</strong></p>
+                <p style="color: #ccc; margin: 0.5rem 0;">Username: <strong>nafiz</strong> | Password: <strong>portfolio2025</strong></p>
+            </div>
+        </div>
+
+        <!-- Dashboard -->
+        <div id="dashboard" class="dashboard">
+            <h2 style="color: #fff; text-align: center; margin-bottom: 2rem;">Portfolio Admin Dashboard</h2>
+            
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <div id="welcomeMessage" class="success-message" style="font-size: 1.2rem;"></div>
+                <div style="margin: 1rem 0;">
+                    <button class="nav-btn" onclick="showSection('projects')">
+                        <i class="fas fa-project-diagram"></i> Manage Projects
+                    </button>
+                    <a href="index.html" class="nav-btn">
+                        <i class="fas fa-home"></i> View Site
+                    </a>
+                    <button class="nav-btn logout-btn" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
+            </div>
+
+            <!-- Projects Section -->
+            <div id="projectsSection" style="display: none;">
+                <h3 style="color: #fff;">Manage Projects</h3>
+                <div class="project-form">
+                    <h4 style="color: #00a8ff;">Add New Project</h4>
+                    <form id="projectForm">
+                        <div class="form-group">
+                            <label style="color: #ccc;">Project Title</label>
+                            <input type="text" id="projectTitle" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label style="color: #ccc;">Description</label>
+                            <textarea id="projectDescription" class="form-control" rows="3" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label style="color: #ccc;">Image URL</label>
+                            <input type="url" id="projectImage" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label style="color: #ccc;">Live Demo URL</label>
+                            <input type="url" id="projectLive" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label style="color: #ccc;">GitHub URL</label>
+                            <input type="url" id="projectGithub" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label style="color: #ccc;">Technologies (comma-separated)</label>
+                            <input type="text" id="projectTech" class="form-control" placeholder="React, Node.js, MongoDB">
+                        </div>
+                        <button type="submit" class="btn-admin">Add Project</button>
+                    </form>
+                </div>
+                <div class="projects-list" id="projectsList"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+</html>
