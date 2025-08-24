@@ -40,6 +40,66 @@ function initializeEventListeners() {
     if (adminLoginForm) {
         adminLoginForm.addEventListener('submit', handleLogin);
     }
+    
+    // Image type toggle listeners
+    const imageTypeUrl = document.getElementById('imageTypeUrl');
+    const imageTypeFile = document.getElementById('imageTypeFile');
+    const urlInputGroup = document.getElementById('urlInputGroup');
+    const fileInputGroup = document.getElementById('fileInputGroup');
+    const projectImageFile = document.getElementById('projectImageFile');
+    const imagePreview = document.getElementById('imagePreview');
+    const previewImg = document.getElementById('previewImg');
+    
+    if (imageTypeUrl && imageTypeFile) {
+        imageTypeUrl.addEventListener('change', function() {
+            if (this.checked) {
+                urlInputGroup.style.display = 'block';
+                fileInputGroup.style.display = 'none';
+                imagePreview.style.display = 'none';
+                document.getElementById('projectImage').required = true;
+            }
+        });
+        
+        imageTypeFile.addEventListener('change', function() {
+            if (this.checked) {
+                urlInputGroup.style.display = 'none';
+                fileInputGroup.style.display = 'block';
+                document.getElementById('projectImage').required = false;
+            }
+        });
+    }
+    
+    // File upload preview
+    if (projectImageFile) {
+        projectImageFile.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                // Validate file type
+                if (!file.type.startsWith('image/')) {
+                    alert('Please select a valid image file.');
+                    this.value = '';
+                    return;
+                }
+                
+                // Validate file size (max 5MB)
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('Image size should be less than 5MB.');
+                    this.value = '';
+                    return;
+                }
+                
+                // Show preview
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewImg.src = e.target.result;
+                    imagePreview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            } else {
+                imagePreview.style.display = 'none';
+            }
+        });
+    }
 }
 
 // Test API connection
@@ -232,10 +292,31 @@ async function handleAddProject(e) {
     // Get form values
     const title = document.getElementById('projectTitle').value.trim();
     const description = document.getElementById('projectDescription').value.trim();
-    const image = document.getElementById('projectImage').value.trim();
     const liveUrl = document.getElementById('projectLive').value.trim();
     const githubUrl = document.getElementById('projectGithub').value.trim();
     const technologies = document.getElementById('projectTech').value.trim();
+    
+    // Get image based on selected type
+    const imageTypeUrl = document.getElementById('imageTypeUrl').checked;
+    const imageUrl = document.getElementById('projectImage').value.trim();
+    const imageFile = document.getElementById('projectImageFile').files[0];
+    
+    let finalImageUrl = '';
+    
+    if (imageTypeUrl) {
+        if (!imageUrl) {
+            alert('Please provide an image URL or switch to file upload.');
+            return;
+        }
+        finalImageUrl = imageUrl;
+    } else {
+        if (!imageFile) {
+            alert('Please select an image file or switch to URL input.');
+            return;
+        }
+        // Convert file to base64 data URL for local storage
+        finalImageUrl = await convertFileToDataURL(imageFile);
+    }
     
     // Validate required fields
     if (!title) {
@@ -246,10 +327,6 @@ async function handleAddProject(e) {
         alert('Project description is required');
         return;
     }
-    if (!image) {
-        alert('Project image URL is required');
-        return;
-    }
     if (!technologies) {
         alert('Technologies field is required');
         return;
@@ -258,7 +335,7 @@ async function handleAddProject(e) {
     const projectData = {
         title: title,
         description: description,
-        image: image,
+        image: finalImageUrl,
         technologies: technologies,
         // Only include URLs if they're not empty and appear to be valid URLs
         ...(liveUrl && liveUrl.startsWith('http') ? { liveUrl: liveUrl } : {}),
@@ -274,6 +351,12 @@ async function handleAddProject(e) {
         
         // Clear form
         document.getElementById('projectForm').reset();
+        
+        // Reset image preview and radio buttons
+        document.getElementById('imagePreview').style.display = 'none';
+        document.getElementById('imageTypeUrl').checked = true;
+        document.getElementById('urlInputGroup').style.display = 'block';
+        document.getElementById('fileInputGroup').style.display = 'none';
         
         // Reload projects list
         console.log('Reloading projects list...');
@@ -293,6 +376,16 @@ async function handleAddProject(e) {
             alert('Error adding project: ' + error.message);
         }
     }
+}
+
+// Helper function to convert file to data URL
+function convertFileToDataURL(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (e) => resolve(e.target.result);
+        reader.onerror = (e) => reject(e);
+        reader.readAsDataURL(file);
+    });
 }
 
 // Load projects for admin

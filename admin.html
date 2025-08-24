@@ -198,8 +198,23 @@
                             <textarea id="projectDescription" class="form-control" rows="3" required placeholder="Describe your project"></textarea>
                         </div>
                         <div class="form-group">
-                            <label style="color: #ccc;">Image URL *</label>
-                            <input type="url" id="projectImage" class="form-control" required placeholder="https://example.com/image.jpg">
+                            <label style="color: #ccc;">Project Image *</label>
+                            <div style="margin-bottom: 10px;">
+                                <input type="radio" id="imageTypeUrl" name="imageType" value="url" checked style="margin-right: 5px;">
+                                <label for="imageTypeUrl" style="color: #ccc; margin-right: 20px;">Image URL</label>
+                                <input type="radio" id="imageTypeFile" name="imageType" value="file" style="margin-right: 5px;">
+                                <label for="imageTypeFile" style="color: #ccc;">Upload Local File</label>
+                            </div>
+                            <div id="urlInputGroup">
+                                <input type="url" id="projectImage" class="form-control" placeholder="https://example.com/image.jpg">
+                            </div>
+                            <div id="fileInputGroup" style="display: none;">
+                                <input type="file" id="projectImageFile" class="form-control" accept="image/*">
+                                <small style="color: #888; margin-top: 5px; display: block;">Supported formats: JPG, PNG, GIF, WebP</small>
+                            </div>
+                            <div id="imagePreview" style="margin-top: 10px; display: none;">
+                                <img id="previewImg" style="max-width: 200px; max-height: 150px; border-radius: 5px; border: 2px solid #444;">
+                            </div>
                         </div>
                         <div class="form-group">
                             <label style="color: #ccc;">Live Demo URL (optional)</label>
