@@ -278,45 +278,10 @@ function initAnimations() {
     }
 }
 
-// Initialize default data if none exists
-function initializeDefaultData() {
-    // Default projects
-    if (!localStorage.getItem('projects')) {
-        const defaultProjects = [
-            {
-                id: 1,
-                title: "E-Commerce Platform",
-                description: "Full-stack e-commerce solution with payment integration and admin dashboard.",
-                image: "https://via.placeholder.com/400x250/333/00ff88?text=E-Commerce+Platform",
-                liveUrl: "https://example.com/ecommerce",
-                githubUrl: "https://github.com/username/ecommerce",
-                technologies: "React, Node.js, MongoDB, Stripe"
-            },
-            {
-                id: 2,
-                title: "Task Management App",
-                description: "Collaborative task management application with real-time updates.",
-                image: "https://via.placeholder.com/400x250/333/00a8ff?text=Task+Manager",
-                liveUrl: "https://example.com/taskmanager",
-                githubUrl: "https://github.com/username/taskmanager",
-                technologies: "Vue.js, Express.js, Socket.io, PostgreSQL"
-            },
-            {
-                id: 3,
-                title: "Portfolio Website",
-                description: "Responsive portfolio website with admin panel and content management.",
-                image: "https://via.placeholder.com/400x250/333/ff6b6b?text=Portfolio+Site",
-                liveUrl: "https://example.com/portfolio",
-                githubUrl: "https://github.com/username/portfolio",
-                technologies: "HTML5, CSS3, JavaScript, ASP.NET"
-            }
-        ];
-        localStorage.setItem('projects', JSON.stringify(defaultProjects));
-    }
-}
-
-// Initialize default data on first load
-initializeDefaultData();
+// Load projects on page load
+document.addEventListener('DOMContentLoaded', () => {
+    loadProjects();
+});
 
 // Education timeline animations
 function initEducationAnimations() {
