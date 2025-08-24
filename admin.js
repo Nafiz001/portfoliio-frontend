@@ -281,6 +281,16 @@ async function loadProjectsAdmin() {
 async function deleteProject(projectId) {
     console.log('Delete project called with ID:', projectId);
     
+    // Check if user is logged in
+    const token = localStorage.getItem('authToken');
+    const username = localStorage.getItem('username');
+    console.log('Auth status - Token exists:', !!token, 'Username:', username);
+    
+    if (!token) {
+        alert('You must be logged in to delete projects. Please log in again.');
+        return;
+    }
+    
     if (confirm('Are you sure you want to delete this project?')) {
         try {
             console.log('Calling PortfolioAPI.deleteProject...');
@@ -292,7 +302,16 @@ async function deleteProject(projectId) {
             alert('Project deleted successfully!');
         } catch (error) {
             console.error('Error deleting project:', error);
-            alert('Error deleting project: ' + error.message);
+            
+            // More detailed error information
+            if (error.message.includes('401')) {
+                alert('Authentication failed. Please log in again.');
+                logout(); // Force re-login
+            } else if (error.message.includes('Failed to fetch')) {
+                alert('Network error. Please check your internet connection and try again.');
+            } else {
+                alert('Error deleting project: ' + error.message);
+            }
         }
     }
 }
@@ -330,6 +349,16 @@ class PortfolioAPI {
             if (!response.ok) {
                 const errorText = await response.text();
                 console.error('HTTP error response:', errorText);
+                
+                // Log specific error details
+                if (response.status === 401) {
+                    console.error('Authentication failed - token may be invalid or expired');
+                } else if (response.status === 403) {
+                    console.error('Access forbidden - insufficient permissions');
+                } else if (response.status === 404) {
+                    console.error('Resource not found');
+                }
+                
                 throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
             }
             
@@ -338,6 +367,12 @@ class PortfolioAPI {
             return data;
         } catch (error) {
             console.error('API Request failed:', error);
+            
+            // Enhanced error logging
+            if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
+                console.error('Network error - possibly CORS, network connectivity, or server issues');
+                console.error('Request details:', { url, method: options.method || 'GET', headers: config.headers });
+            }
             
             // Only fallback to localStorage for GET projects and specific operations
             if (endpoint === '/projects' && options.method === 'GET') {
