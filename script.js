@@ -172,8 +172,8 @@ async function loadProjects() {
                     <img src="${project.image}" alt="${project.title}" onerror="this.src='https://via.placeholder.com/400x250/333/fff?text=Project+Image'">
                     <div class="project-overlay">
                         <div class="project-links">
-                            ${project.liveUrl ? `<a href="${project.liveUrl}" target="_blank" class="project-link"><i class="fas fa-external-link-alt"></i></a>` : ''}
-                            ${project.githubUrl ? `<a href="${project.githubUrl}" target="_blank" class="project-link"><i class="fab fa-github"></i></a>` : ''}
+                            ${project.liveUrl || project.LiveUrl ? `<a href="${project.liveUrl || project.LiveUrl}" target="_blank" class="project-link"><i class="fas fa-external-link-alt"></i></a>` : ''}
+                            ${project.githubUrl || project.gitHubUrl || project.GitHubUrl ? `<a href="${project.githubUrl || project.gitHubUrl || project.GitHubUrl}" target="_blank" class="project-link"><i class="fab fa-github"></i></a>` : ''}
                         </div>
                     </div>
                 </div>

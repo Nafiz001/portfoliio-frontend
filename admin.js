@@ -337,9 +337,9 @@ async function handleAddProject(e) {
         description: description,
         image: finalImageUrl,
         technologies: technologies,
-        // Only include URLs if they're not empty and appear to be valid URLs
+        // Only include URLs if they're not empty and appear to be valid URLs (use backend model field names)
         ...(liveUrl && liveUrl.startsWith('http') ? { liveUrl: liveUrl } : {}),
-        ...(githubUrl && githubUrl.startsWith('http') ? { githubUrl: githubUrl } : {})
+        ...(githubUrl && githubUrl.startsWith('http') ? { gitHubUrl: githubUrl } : {})
     };
     
     console.log('Project data:', projectData);
