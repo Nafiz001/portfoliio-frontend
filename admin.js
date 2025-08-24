@@ -1,5 +1,5 @@
 // Admin Panel JavaScript
-const API_BASE_URL = 'http://localhost:5000/api'; // Backend API URL
+const API_BASE_URL = 'https://web-production-813ca.up.railway.app/'; // Backend API URL
 
 // Authentication state
 let isLoggedIn = false;
