@@ -1,5 +1,5 @@
 // Configuration
-const API_BASE_URL = 'https://web-production-813ca.up.railway.app/'; // Backend API URL
+const API_BASE_URL = 'https://web-production-813ca.up.railway.app/api'; // Backend API URL (local testing)
 // For development, you can use: 'http://localhost:5000/api'
 
 // API Helper Functions
