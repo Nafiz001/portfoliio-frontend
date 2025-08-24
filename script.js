@@ -17,7 +17,9 @@ class PortfolioAPI {
         // Add auth token if available
         const token = localStorage.getItem('authToken');
         if (token) {
-            config.headers['Authorization'] = `Bearer ${token}`;
+            // Handle both Bearer-prefixed and plain tokens
+            const authToken = token.startsWith('Bearer ') ? token : `Bearer ${token}`;
+            config.headers['Authorization'] = authToken;
         }
 
         try {

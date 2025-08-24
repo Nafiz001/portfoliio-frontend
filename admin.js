@@ -314,8 +314,10 @@ class PortfolioAPI {
         // Add auth token if available
         const token = localStorage.getItem('authToken');
         if (token) {
-            config.headers['Authorization'] = `Bearer ${token}`;
-            console.log('Added auth token to request:', token.substring(0, 20) + '...');
+            // Handle both Bearer-prefixed and plain tokens
+            const authToken = token.startsWith('Bearer ') ? token : `Bearer ${token}`;
+            config.headers['Authorization'] = authToken;
+            console.log('Added auth token to request:', authToken.substring(0, 20) + '...');
         } else {
             console.log('No auth token found in localStorage');
         }
@@ -434,8 +436,8 @@ class PortfolioAPI {
             );
 
             if (isValid) {
-                // Create a more realistic JWT-like token for fallback
-                const fallbackToken = 'Bearer_' + btoa(`${username}:${Date.now()}`);
+                // Create a simple token for fallback (without Bearer prefix since it's added in makeRequest)
+                const fallbackToken = btoa(`${username}:${Date.now()}`);
                 localStorage.setItem('authToken', fallbackToken);
                 localStorage.setItem('username', username);
                 return { Success: true, success: true, Token: fallbackToken, token: fallbackToken, Username: username, username };
