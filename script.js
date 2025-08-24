@@ -1,5 +1,5 @@
 // Configuration
-const API_BASE_URL = 'https://your-backend-api.herokuapp.com/api'; // Replace with your backend URL
+const API_BASE_URL = 'http://localhost:5000/api'; // Backend API URL
 // For development, you can use: 'http://localhost:5000/api'
 
 // API Helper Functions

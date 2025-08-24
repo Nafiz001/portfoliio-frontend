@@ -190,28 +190,28 @@
                     <h4 style="color: #00a8ff;">Add New Project</h4>
                     <form id="projectForm">
                         <div class="form-group">
-                            <label style="color: #ccc;">Project Title</label>
-                            <input type="text" id="projectTitle" class="form-control" required>
+                            <label style="color: #ccc;">Project Title *</label>
+                            <input type="text" id="projectTitle" class="form-control" required placeholder="Enter project title">
                         </div>
                         <div class="form-group">
-                            <label style="color: #ccc;">Description</label>
-                            <textarea id="projectDescription" class="form-control" rows="3" required></textarea>
+                            <label style="color: #ccc;">Description *</label>
+                            <textarea id="projectDescription" class="form-control" rows="3" required placeholder="Describe your project"></textarea>
                         </div>
                         <div class="form-group">
-                            <label style="color: #ccc;">Image URL</label>
-                            <input type="url" id="projectImage" class="form-control" required>
+                            <label style="color: #ccc;">Image URL *</label>
+                            <input type="url" id="projectImage" class="form-control" required placeholder="https://example.com/image.jpg">
                         </div>
                         <div class="form-group">
-                            <label style="color: #ccc;">Live Demo URL</label>
-                            <input type="url" id="projectLive" class="form-control">
+                            <label style="color: #ccc;">Live Demo URL (optional)</label>
+                            <input type="url" id="projectLive" class="form-control" placeholder="https://your-demo.com">
                         </div>
                         <div class="form-group">
-                            <label style="color: #ccc;">GitHub URL</label>
-                            <input type="url" id="projectGithub" class="form-control">
+                            <label style="color: #ccc;">GitHub URL (optional)</label>
+                            <input type="url" id="projectGithub" class="form-control" placeholder="https://github.com/username/repo">
                         </div>
                         <div class="form-group">
-                            <label style="color: #ccc;">Technologies (comma-separated)</label>
-                            <input type="text" id="projectTech" class="form-control" placeholder="React, Node.js, MongoDB">
+                            <label style="color: #ccc;">Technologies *</label>
+                            <input type="text" id="projectTech" class="form-control" required placeholder="React, Node.js, MongoDB">
                         </div>
                         <button type="submit" class="btn-admin">Add Project</button>
                     </form>

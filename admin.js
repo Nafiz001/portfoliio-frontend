@@ -1,5 +1,5 @@
 // Admin Panel JavaScript
-const API_BASE_URL = 'https://your-backend-api.herokuapp.com/api'; // Replace with your backend URL
+const API_BASE_URL = 'http://localhost:5000/api'; // Backend API URL
 
 // Authentication state
 let isLoggedIn = false;
@@ -27,6 +27,9 @@ document.addEventListener('DOMContentLoaded', () => {
         welcomeMessage: !!welcomeMessage
     });
     
+    // Test API connection
+    testAPIConnection();
+    
     checkAuthStatus();
     initializeForms();
     initializeEventListeners();
@@ -39,10 +42,39 @@ function initializeEventListeners() {
     }
 }
 
+// Test API connection
+async function testAPIConnection() {
+    console.log('Testing API connection to:', API_BASE_URL);
+    try {
+        const response = await fetch(`${API_BASE_URL}/projects`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        });
+        console.log('API test response status:', response.status);
+        if (response.ok) {
+            const data = await response.json();
+            console.log('API test successful! Received projects:', data);
+        } else {
+            console.error('API test failed with status:', response.status, response.statusText);
+        }
+    } catch (error) {
+        console.error('API connection test error:', error);
+    }
+}
+
 // Check if user is already logged in
 function checkAuthStatus() {
+    // Clear any existing auth for fresh start - UNCOMMENT TO FORCE FRESH LOGIN
+    // localStorage.removeItem('authToken');
+    // localStorage.removeItem('username');
+    
     const token = localStorage.getItem('authToken');
     const username = localStorage.getItem('username');
+    
+    console.log('Checking auth status - token:', token ? token.substring(0, 20) + '...' : 'none');
+    console.log('Checking auth status - username:', username);
     
     if (token && username) {
         isLoggedIn = true;
@@ -88,9 +120,9 @@ async function handleLogin(e) {
         const result = await PortfolioAPI.login(username, password);
         console.log('Login successful:', result);
         
-        if (result.success) {
+        if (result.Success || result.success) { // Handle both backend and fallback response formats
             isLoggedIn = true;
-            currentUser = username;
+            currentUser = result.Username || result.username || username;
             showDashboard();
             if (errorMessage) errorMessage.textContent = '';
         }
@@ -153,26 +185,61 @@ function initializeForms() {
 async function handleAddProject(e) {
     e.preventDefault();
     
+    console.log('Add project form submitted');
+    
+    // Get form values
+    const title = document.getElementById('projectTitle').value.trim();
+    const description = document.getElementById('projectDescription').value.trim();
+    const image = document.getElementById('projectImage').value.trim();
+    const liveUrl = document.getElementById('projectLive').value.trim();
+    const githubUrl = document.getElementById('projectGithub').value.trim();
+    const technologies = document.getElementById('projectTech').value.trim();
+    
+    // Validate required fields
+    if (!title) {
+        alert('Project title is required');
+        return;
+    }
+    if (!description) {
+        alert('Project description is required');
+        return;
+    }
+    if (!image) {
+        alert('Project image URL is required');
+        return;
+    }
+    if (!technologies) {
+        alert('Technologies field is required');
+        return;
+    }
+    
     const projectData = {
-        title: document.getElementById('projectTitle').value,
-        description: document.getElementById('projectDescription').value,
-        image: document.getElementById('projectImage').value,
-        liveUrl: document.getElementById('projectLive').value,
-        githubUrl: document.getElementById('projectGithub').value,
-        technologies: document.getElementById('projectTech').value
+        title: title,
+        description: description,
+        image: image,
+        technologies: technologies,
+        // Only include URLs if they're not empty and appear to be valid URLs
+        ...(liveUrl && liveUrl.startsWith('http') ? { liveUrl: liveUrl } : {}),
+        ...(githubUrl && githubUrl.startsWith('http') ? { githubUrl: githubUrl } : {})
     };
     
+    console.log('Project data:', projectData);
+    
     try {
-        await PortfolioAPI.addProject(projectData);
+        console.log('Calling PortfolioAPI.addProject...');
+        const result = await PortfolioAPI.addProject(projectData);
+        console.log('Add project result:', result);
         
         // Clear form
         document.getElementById('projectForm').reset();
         
         // Reload projects list
-        loadProjectsAdmin();
+        console.log('Reloading projects list...');
+        await loadProjectsAdmin();
         
         alert('Project added successfully!');
     } catch (error) {
+        console.error('Error adding project:', error);
         alert('Error adding project: ' + error.message);
     }
 }
@@ -212,12 +279,19 @@ async function loadProjectsAdmin() {
 
 // Delete project
 async function deleteProject(projectId) {
+    console.log('Delete project called with ID:', projectId);
+    
     if (confirm('Are you sure you want to delete this project?')) {
         try {
-            await PortfolioAPI.deleteProject(projectId);
-            loadProjectsAdmin();
+            console.log('Calling PortfolioAPI.deleteProject...');
+            const result = await PortfolioAPI.deleteProject(projectId);
+            console.log('Delete project result:', result);
+            
+            console.log('Reloading projects list...');
+            await loadProjectsAdmin();
             alert('Project deleted successfully!');
         } catch (error) {
+            console.error('Error deleting project:', error);
             alert('Error deleting project: ' + error.message);
         }
     }
@@ -227,6 +301,8 @@ async function deleteProject(projectId) {
 class PortfolioAPI {
     static async makeRequest(endpoint, options = {}) {
         const url = `${API_BASE_URL}${endpoint}`;
+        console.log('Making API request to:', url, 'with options:', options);
+        
         const config = {
             headers: {
                 'Content-Type': 'application/json',
@@ -239,20 +315,36 @@ class PortfolioAPI {
         const token = localStorage.getItem('authToken');
         if (token) {
             config.headers['Authorization'] = `Bearer ${token}`;
+            console.log('Added auth token to request:', token.substring(0, 20) + '...');
+        } else {
+            console.log('No auth token found in localStorage');
         }
 
         try {
+            console.log('Sending request with config:', config);
             const response = await fetch(url, config);
+            console.log('Response received:', response.status, response.statusText);
             
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                const errorText = await response.text();
+                console.error('HTTP error response:', errorText);
+                throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
             }
             
-            return await response.json();
+            const data = await response.json();
+            console.log('Response data:', data);
+            return data;
         } catch (error) {
             console.error('API Request failed:', error);
-            // Fallback to local storage for development
-            return this.fallbackToLocalStorage(endpoint, options);
+            
+            // Only fallback to localStorage for GET projects and specific operations
+            if (endpoint === '/projects' && options.method === 'GET') {
+                console.log('Falling back to localStorage for GET projects');
+                return this.fallbackToLocalStorage(endpoint, options);
+            }
+            
+            // Don't fallback for auth, POST, DELETE operations - let them fail properly
+            throw error;
         }
     }
 
@@ -273,6 +365,14 @@ class PortfolioAPI {
             return newProject;
         }
         
+        if (endpoint.startsWith('/projects/') && options.method === 'DELETE') {
+            const projectId = parseInt(endpoint.split('/')[2]);
+            const projects = JSON.parse(localStorage.getItem('projects') || '[]');
+            const filteredProjects = projects.filter(p => p.id !== projectId);
+            localStorage.setItem('projects', JSON.stringify(filteredProjects));
+            return { success: true };
+        }
+        
         return {};
     }
 
@@ -289,36 +389,71 @@ class PortfolioAPI {
     }
 
     static async deleteProject(projectId) {
-        const projects = JSON.parse(localStorage.getItem('projects') || '[]');
-        const filteredProjects = projects.filter(p => p.id !== projectId);
-        localStorage.setItem('projects', JSON.stringify(filteredProjects));
-        return { success: true };
+        return this.makeRequest(`/projects/${projectId}`, {
+            method: 'DELETE'
+        });
     }
 
     // Authentication API
     static async login(username, password) {
-        // Simple client-side auth for demo
-        const validCredentials = [
-            { username: 'admin', password: 'admin123' },
-            { username: 'nafiz', password: 'portfolio2025' }
-        ];
+        console.log('Attempting backend login for:', username);
+        
+        try {
+            const response = await this.makeRequest('/auth/login', {
+                method: 'POST',
+                body: JSON.stringify({ username, password })
+            });
+            
+            console.log('Backend login response:', response);
+            
+            if (response.Success && response.Token) { 
+                localStorage.setItem('authToken', response.Token);
+                localStorage.setItem('username', response.Username);
+                return response;
+            } else if (response.Token || response.token) { // Handle fallback format
+                const token = response.Token || response.token;
+                const user = response.Username || response.username || username;
+                localStorage.setItem('authToken', token);
+                localStorage.setItem('username', user);
+                return response;
+            }
+            
+            throw new Error(response.Message || 'Login failed');
+        } catch (error) {
+            console.error('Backend login failed:', error);
+            console.log('Attempting fallback authentication...');
+            
+            // Fallback to simple client-side auth for demo
+            const validCredentials = [
+                { username: 'admin', password: 'admin123' },
+                { username: 'nafiz', password: 'portfolio2025' }
+            ];
 
-        const isValid = validCredentials.some(cred => 
-            cred.username === username && cred.password === password
-        );
+            const isValid = validCredentials.some(cred => 
+                cred.username === username && cred.password === password
+            );
 
-        if (isValid) {
-            const token = btoa(`${username}:${Date.now()}`); // Simple token
-            localStorage.setItem('authToken', token);
-            localStorage.setItem('username', username);
-            return { success: true, token, username };
+            if (isValid) {
+                // Create a more realistic JWT-like token for fallback
+                const fallbackToken = 'Bearer_' + btoa(`${username}:${Date.now()}`);
+                localStorage.setItem('authToken', fallbackToken);
+                localStorage.setItem('username', username);
+                return { Success: true, success: true, Token: fallbackToken, token: fallbackToken, Username: username, username };
+            }
+
+            throw new Error('Invalid credentials');
         }
-
-        throw new Error('Invalid credentials');
     }
 
     static logout() {
         localStorage.removeItem('authToken');
         localStorage.removeItem('username');
+        console.log('Logged out, cleared localStorage');
+    }
+    
+    // Test function to clear auth and refresh
+    static clearAuth() {
+        this.logout();
+        window.location.reload();
     }
 }
