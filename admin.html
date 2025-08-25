@@ -97,19 +97,38 @@
             margin-bottom: 2rem;
         }
         
-        .projects-list, .skills-list {
+        .projects-list, .skills-list, .education-list {
             display: grid;
             gap: 1rem;
             margin-top: 2rem;
         }
         
-        .project-item, .skill-item {
+        .project-item, .skill-item, .education-item {
             background: #333;
             padding: 1rem;
             border-radius: 8px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+        }
+        
+        .education-item {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .education-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 0.5rem;
+        }
+        
+        .education-details {
+            color: #ccc;
+            font-size: 0.9rem;
+            line-height: 1.4;
         }
         
         .delete-btn {
@@ -170,6 +189,9 @@
                     <button class="nav-btn" onclick="showSection('projects')">
                         <i class="fas fa-project-diagram"></i> Manage Projects
                     </button>
+                    <button class="nav-btn" onclick="showSection('education')">
+                        <i class="fas fa-graduation-cap"></i> Manage Education
+                    </button>
                     <a href="index.html" class="nav-btn">
                         <i class="fas fa-home"></i> View Site
                     </a>
@@ -228,6 +250,42 @@
                     </form>
                 </div>
                 <div class="projects-list" id="projectsList"></div>
+            </div>
+
+            <!-- Education Section -->
+            <div id="educationSection" style="display: none;">
+                <h3 style="color: #fff;">Manage Education</h3>
+                <div class="education-form">
+                    <h4 style="color: #00a8ff;">Add New Education</h4>
+                    <form id="educationForm">
+                        <div class="form-group">
+                            <label style="color: #ccc;">Degree/Course *</label>
+                            <input type="text" id="educationDegree" class="form-control" required placeholder="Bachelor of Science in Computer Science">
+                        </div>
+                        <div class="form-group">
+                            <label style="color: #ccc;">Institution *</label>
+                            <input type="text" id="educationInstitution" class="form-control" required placeholder="University Name">
+                        </div>
+                        <div class="form-group">
+                            <label style="color: #ccc;">Duration *</label>
+                            <input type="text" id="educationDuration" class="form-control" required placeholder="2020 - 2024">
+                        </div>
+                        <div class="form-group">
+                            <label style="color: #ccc;">Description</label>
+                            <textarea id="educationDescription" class="form-control" rows="3" placeholder="Brief description of your studies"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label style="color: #ccc;">Grade/CGPA</label>
+                            <input type="text" id="educationGrade" class="form-control" placeholder="3.8/4.0 or First Class">
+                        </div>
+                        <div class="form-group">
+                            <label style="color: #ccc;">Location</label>
+                            <input type="text" id="educationLocation" class="form-control" placeholder="City, Country">
+                        </div>
+                        <button type="submit" class="btn-admin">Add Education</button>
+                    </form>
+                </div>
+                <div class="education-list" id="educationList"></div>
             </div>
         </div>
     </div>

@@ -252,7 +252,9 @@ function logout() {
 function showSection(section) {
     // Hide all sections
     const projectsSection = document.getElementById('projectsSection');
+    const educationSection = document.getElementById('educationSection');
     if (projectsSection) projectsSection.style.display = 'none';
+    if (educationSection) educationSection.style.display = 'none';
     
     // Show selected section
     const targetSection = document.getElementById(section + 'Section');
@@ -261,6 +263,8 @@ function showSection(section) {
     // Load data for the section
     if (section === 'projects') {
         loadProjectsAdmin();
+    } else if (section === 'education') {
+        loadEducationAdmin();
     }
 }
 
@@ -270,6 +274,12 @@ function initializeForms() {
     const projectForm = document.getElementById('projectForm');
     if (projectForm) {
         projectForm.addEventListener('submit', handleAddProject);
+    }
+    
+    // Education form
+    const educationForm = document.getElementById('educationForm');
+    if (educationForm) {
+        educationForm.addEventListener('submit', handleAddEducation);
     }
 }
 
@@ -638,5 +648,105 @@ class PortfolioAPI {
     static clearAuth() {
         this.logout();
         window.location.reload();
+    }
+}
+
+// Education Management Functions
+async function handleAddEducation(e) {
+    e.preventDefault();
+    
+    const degree = document.getElementById('educationDegree').value;
+    const institution = document.getElementById('educationInstitution').value;
+    const duration = document.getElementById('educationDuration').value;
+    const description = document.getElementById('educationDescription').value;
+    const grade = document.getElementById('educationGrade').value;
+    const location = document.getElementById('educationLocation').value;
+    
+    try {
+        const response = await makeAuthenticatedRequest('/education', {
+            method: 'POST',
+            body: JSON.stringify({
+                Degree: degree,
+                Institution: institution,
+                Duration: duration,
+                Description: description,
+                Grade: grade,
+                Location: location
+            })
+        });
+        
+        if (response) {
+            alert('Education added successfully!');
+            document.getElementById('educationForm').reset();
+            loadEducationAdmin();
+        }
+    } catch (error) {
+        console.error('Error adding education:', error);
+        alert('Error adding education: ' + error.message);
+    }
+}
+
+async function loadEducationAdmin() {
+    try {
+        const response = await fetch(`${API_BASE_URL}/education`);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const education = await response.json();
+        console.log('Loaded education:', education);
+        
+        const educationList = document.getElementById('educationList');
+        if (!educationList) return;
+        
+        if (education.length === 0) {
+            educationList.innerHTML = '<p style="color: #ccc; text-align: center; padding: 2rem;">No education entries found. Add your first education entry above.</p>';
+            return;
+        }
+        
+        educationList.innerHTML = education.map(edu => `
+            <div class="education-item">
+                <div class="education-header">
+                    <h4 style="color: #fff; margin: 0;">${edu.degree}</h4>
+                    <button class="delete-btn" onclick="deleteEducation(${edu.id})">
+                        <i class="fas fa-trash"></i> Delete
+                    </button>
+                </div>
+                <div class="education-details">
+                    <div><strong>Institution:</strong> ${edu.institution}</div>
+                    <div><strong>Duration:</strong> ${edu.duration}</div>
+                    ${edu.grade ? `<div><strong>Grade:</strong> ${edu.grade}</div>` : ''}
+                    ${edu.location ? `<div><strong>Location:</strong> ${edu.location}</div>` : ''}
+                    ${edu.description ? `<div><strong>Description:</strong> ${edu.description}</div>` : ''}
+                </div>
+            </div>
+        `).join('');
+        
+    } catch (error) {
+        console.error('Error loading education:', error);
+        const educationList = document.getElementById('educationList');
+        if (educationList) {
+            educationList.innerHTML = '<p style="color: #ff4757; text-align: center; padding: 2rem;">Error loading education. Please try again.</p>';
+        }
+    }
+}
+
+async function deleteEducation(educationId) {
+    if (!confirm('Are you sure you want to delete this education entry?')) {
+        return;
+    }
+    
+    try {
+        const response = await makeAuthenticatedRequest(`/education/${educationId}`, {
+            method: 'DELETE'
+        });
+        
+        if (response) {
+            alert('Education deleted successfully!');
+            loadEducationAdmin();
+        }
+    } catch (error) {
+        console.error('Error deleting education:', error);
+        alert('Error deleting education: ' + error.message);
     }
 }

@@ -76,6 +76,22 @@ class PortfolioAPI {
         return { success: true };
     }
 
+    // Education API
+    static async getEducation() {
+        return this.makeRequest('/education', { method: 'GET' });
+    }
+
+    static async addEducation(educationData) {
+        return this.makeRequest('/education', {
+            method: 'POST',
+            body: JSON.stringify(educationData)
+        });
+    }
+
+    static async deleteEducation(educationId) {
+        return this.makeRequest(`/education/${educationId}`, { method: 'DELETE' });
+    }
+
     // Authentication API
     static async login(username, password) {
         // Simple client-side auth for demo
@@ -163,6 +179,7 @@ window.addEventListener('scroll', () => {
 // Load content when DOM is ready
 document.addEventListener('DOMContentLoaded', async () => {
     await loadProjects();
+    await loadEducation();
     initContactForm();
     initAnimations();
 });
@@ -223,6 +240,42 @@ async function loadProjects() {
                 </div>
             `;
         }
+    }
+}
+
+// Load education from API
+async function loadEducation() {
+    try {
+        const response = await fetch(`${API_BASE_URL}/education`);
+        if (!response.ok) {
+            console.warn('Education API not available, using fallback data');
+            return; // Keep existing hardcoded education data
+        }
+        
+        const education = await response.json();
+        const container = document.querySelector('.education-timeline');
+        
+        if (!container || education.length === 0) return;
+
+        container.innerHTML = education.map(edu => `
+            <div class="timeline-item">
+                <div class="timeline-marker"></div>
+                <div class="timeline-content">
+                    <div class="timeline-date">${edu.duration}</div>
+                    <h3>${edu.degree}</h3>
+                    <h4>${edu.institution}</h4>
+                    ${edu.description ? `<p>${edu.description}</p>` : ''}
+                    <div class="education-details">
+                        ${edu.grade ? `<span class="detail-tag">${edu.grade}</span>` : ''}
+                        ${edu.location ? `<span class="detail-tag">${edu.location}</span>` : ''}
+                    </div>
+                </div>
+            </div>
+        `).join('');
+
+    } catch (error) {
+        console.error('Error loading education:', error);
+        // Keep existing hardcoded education data on error
     }
 }
 
