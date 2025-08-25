@@ -320,24 +320,39 @@ function initContactForm() {
     contactForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         
-        const formData = {
-            name: document.getElementById('name').value,
-            email: document.getElementById('email').value,
-            subject: document.getElementById('subject').value,
-            message: document.getElementById('message').value
-        };
+        const submitButton = contactForm.querySelector('button[type="submit"]');
+        const originalText = submitButton.textContent;
+        
+        // Show loading state
+        submitButton.textContent = 'Sending...';
+        submitButton.disabled = true;
 
         try {
-            // You can implement this API endpoint in your backend
-            // await PortfolioAPI.sendMessage(formData);
+            const formData = new FormData(contactForm);
             
-            // For now, just show success message
-            alert('Thank you for your message! I\'ll get back to you soon.');
-            contactForm.reset();
+            const response = await fetch(contactForm.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'Accept': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                alert('Thank you for your message! I\'ll get back to you soon.');
+                contactForm.reset();
+            } else {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Failed to send message');
+            }
             
         } catch (error) {
             console.error('Error sending message:', error);
             alert('Sorry, there was an error sending your message. Please try again.');
+        } finally {
+            // Reset button state
+            submitButton.textContent = originalText;
+            submitButton.disabled = false;
         }
     });
 }
