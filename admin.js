@@ -12,6 +12,9 @@ let loginForm, dashboard, adminLoginForm, errorMessage, welcomeMessage;
 document.addEventListener('DOMContentLoaded', () => {
     console.log('Admin panel DOM loaded');
     
+    // Initialize theme
+    initializeAdminTheme();
+    
     // Initialize DOM elements
     loginForm = document.getElementById('loginForm');
     dashboard = document.getElementById('dashboard');
@@ -749,4 +752,35 @@ async function deleteEducation(educationId) {
         console.error('Error deleting education:', error);
         alert('Error deleting education: ' + error.message);
     }
+}
+
+// Admin Theme Functions
+function initializeAdminTheme() {
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    setAdminTheme(savedTheme);
+    
+    const adminThemeToggle = document.getElementById('adminThemeToggle');
+    if (adminThemeToggle) {
+        adminThemeToggle.addEventListener('click', toggleAdminTheme);
+    }
+}
+
+function setAdminTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+    
+    const adminThemeIcon = document.getElementById('adminThemeIcon');
+    if (adminThemeIcon) {
+        if (theme === 'light') {
+            adminThemeIcon.className = 'fas fa-moon';
+        } else {
+            adminThemeIcon.className = 'fas fa-sun';
+        }
+    }
+}
+
+function toggleAdminTheme() {
+    const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    setAdminTheme(newTheme);
 }

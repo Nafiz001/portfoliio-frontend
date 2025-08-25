@@ -124,6 +124,38 @@ class PortfolioAPI {
 const navbar = document.getElementById('navbar');
 const hamburger = document.getElementById('hamburger');
 const navMenu = document.getElementById('nav-menu');
+const themeToggle = document.getElementById('themeToggle');
+const themeIcon = document.getElementById('themeIcon');
+
+// Theme functionality
+function initializeTheme() {
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    setTheme(savedTheme);
+}
+
+function setTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+    
+    if (themeIcon) {
+        if (theme === 'light') {
+            themeIcon.className = 'fas fa-moon';
+        } else {
+            themeIcon.className = 'fas fa-sun';
+        }
+    }
+}
+
+function toggleTheme() {
+    const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    setTheme(newTheme);
+}
+
+// Theme toggle event listener
+if (themeToggle) {
+    themeToggle.addEventListener('click', toggleTheme);
+}
 
 // Navigation functionality
 if (hamburger) {
@@ -178,6 +210,7 @@ window.addEventListener('scroll', () => {
 
 // Load content when DOM is ready
 document.addEventListener('DOMContentLoaded', async () => {
+    initializeTheme();
     await loadProjects();
     await loadEducation();
     initContactForm();
