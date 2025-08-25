@@ -27,8 +27,8 @@
     --primary-dark: #009954;
     --secondary-color: #0056b3;
     --accent-color: #0086cc;
-    --background-dark: #ffffff;
-    --background-light: #f8f9fa;
+    --background-dark: #f8fbff;
+    --background-light: #eef7ff;
     --card-background: #ffffff;
     --text-primary: #212529;
     --text-secondary: #495057;
@@ -40,17 +40,17 @@
 
 /* Light theme specific adjustments */
 [data-theme="light"] .navbar {
-    background: rgba(255, 255, 255, 0.95);
+    background: rgba(248, 251, 255, 0.95);
     box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
 }
 
 [data-theme="light"] .navbar.scrolled {
-    background: rgba(255, 255, 255, 0.98);
+    background: rgba(248, 251, 255, 0.98);
     box-shadow: 0 2px 20px rgba(0, 0, 0, 0.15);
 }
 
 [data-theme="light"] .hero {
-    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    background: linear-gradient(135deg, #f8fbff 0%, #eef7ff 100%);
 }
 
 [data-theme="light"] .project-overlay {
