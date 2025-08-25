@@ -233,11 +233,7 @@ body {
     margin-bottom: 2rem;
 }
 
-.hero-stats {
-    display: flex;
-    gap: 2rem;
-    text-align: center;
-}
+
 
 .stat-item h3 {
     font-size: 2rem;
@@ -781,9 +777,7 @@ section {
         text-align: center;
     }
     
-    .hero-stats {
-        justify-content: center;
-    }
+   
     
     .projects-grid {
         grid-template-columns: 1fr;
