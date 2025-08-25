@@ -122,6 +122,12 @@ body {
     align-items: center;
 }
 
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 0;
+}
+
 .nav-logo a {
     color: var(--primary-color);
     font-size: 1.8rem;
@@ -801,6 +807,10 @@ section {
 
 /* Mobile Navigation */
 @media (max-width: 768px) {
+    .nav-right {
+        gap: 0.5rem;
+    }
+
     .nav-menu {
         position: fixed;
         left: -100%;
