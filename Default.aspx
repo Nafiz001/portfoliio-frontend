@@ -13,6 +13,25 @@
     
     <!-- Additional inline styles for smooth animations -->
     <style>
+        /* Navigation Logo Styles */
+        .nav-logo img {
+            height: 40px;
+            width: auto;
+            max-width: 150px;
+            object-fit: contain;
+            transition: transform 0.3s ease;
+        }
+        
+        .nav-logo img:hover {
+            transform: scale(1.05);
+        }
+        
+        .nav-logo a {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+        
         .project-card {
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             border-radius: 12px;
@@ -152,6 +171,61 @@
                 gap: 1.5rem;
             }
         }
+        
+        /* About Section Styles */
+        .about-content {
+            display: flex;
+            align-items: center;
+            gap: 3rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .about-image {
+            flex: 0 0 auto;
+        }
+        
+        .about-profile-image {
+            width: 300px;
+            height: 350px;
+            object-fit: cover;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 2px solid var(--primary-color, #00a8ff);
+        }
+        
+        .about-profile-image:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
+        }
+        
+        .about-text {
+            flex: 1;
+        }
+        
+        /* Responsive design for about section */
+        @media (max-width: 768px) {
+            .about-content {
+                flex-direction: column;
+                text-align: center;
+                gap: 2rem;
+            }
+            
+            .about-profile-image {
+                width: 250px;
+                height: 250px;
+                border-radius: 15px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .about-profile-image {
+                width: 200px;
+                height: 200px;
+                border-radius: 12px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -160,7 +234,9 @@
         <nav class="navbar" id="navbar">
             <div class="nav-container">
                 <div class="nav-logo">
-                    <a href="#home">Nafiz</a>
+                    <a href="#home">
+                        <img src="logo.png" alt="Nafiz Portfolio Logo" />
+                    </a>
                 </div>
                 <div class="nav-right">
                     <ul class="nav-menu" id="nav-menu">
@@ -210,6 +286,9 @@
         <section id="about" class="about">
             <div class="container">
                 <div class="about-content">
+                    <div class="about-image">
+                        <img src="sidepic.jpg" alt="Nafiz Profile Picture" class="about-profile-image">
+                    </div>
                     <div class="about-text">
                         <h2 class="section-title">About Me</h2>
                         <p class="about-description">
@@ -350,10 +429,10 @@
                         <p>Full Stack Developer</p>
                     </div>
                     <div class="footer-social">
-                        <a href="#" target="_blank"><i class="fab fa-github"></i></a>
-                        <a href="#" target="_blank"><i class="fab fa-linkedin"></i></a>
-                        <a href="#" target="_blank"><i class="fab fa-twitter"></i></a>
-                        <a href="#" target="_blank"><i class="fab fa-instagram"></i></a>
+                        <a href="https://github.com/Nafiz001" target="_blank"><i class="fab fa-github"></i></a>
+                        <a href="https://www.linkedin.com/in/nafiz-ahmed-770a3a273/" target="_blank"><i class="fab fa-linkedin"></i></a>
+                        <a href="https://x.com/Nafizahmed000" target="_blank"><i class="fa-brands fa-twitter"></i></a>
+                        <a href="https://www.instagram.com/nafiz_ahmed/" target="_blank"><i class="fab fa-instagram"></i></a>
                     </div>
                 </div>
                 <div class="footer-bottom">
