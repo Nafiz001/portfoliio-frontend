@@ -133,6 +133,18 @@
         a, button, .btn-primary, .btn-secondary, .project-card, .theme-toggle {
             cursor: pointer !important;
         }
+        
+        /* Hide mouse follower on mobile devices */
+        @media (max-width: 768px) {
+            .mouse-follower,
+            .mouse-follower-delayed {
+                display: none !important;
+            }
+            
+            .hero, .about, .projects, .contact, .education {
+                cursor: default;
+            }
+        }
 
         /* Enhanced hover effects for mouse follower */
         .mouse-follower.hover-active {
@@ -898,6 +910,13 @@
 
         // Mouse follower functionality
         function initMouseFollower() {
+            // Check if device is mobile
+            const isMobile = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            
+            if (isMobile) {
+                return; // Exit early on mobile devices
+            }
+            
             const follower = document.getElementById('mouseFollower');
             const followerDelayed = document.getElementById('mouseFollowerDelayed');
             
@@ -1022,6 +1041,22 @@
             if (themeToggle) {
                 themeToggle.addEventListener('click', toggleTheme);
             }
+            
+            // Reinitialize mouse follower on window resize
+            window.addEventListener('resize', function() {
+                const followers = document.querySelectorAll('.mouse-follower, .mouse-follower-delayed');
+                const isMobile = window.innerWidth <= 768;
+                
+                followers.forEach(follower => {
+                    if (isMobile) {
+                        follower.style.display = 'none';
+                    } else {
+                        follower.style.display = 'block';
+                        // Reinitialize mouse follower for desktop
+                        setTimeout(initMouseFollower, 100);
+                    }
+                });
+            });
         });
     </script>
 </body>
