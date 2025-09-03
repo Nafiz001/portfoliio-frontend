@@ -247,10 +247,59 @@
         /* About Section Styles */
         .about-content {
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             gap: 3rem;
             max-width: 1200px;
             margin: 0 auto;
+        }
+        
+        /* Skills Section Styles */
+        .skills-section {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .skills-section h3 {
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+        
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .skill-category h4 {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+        
+        .skill-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        
+        .skill-tag {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .skill-tag:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 255, 136, 0.3);
         }
         
         .about-image {
@@ -334,17 +383,18 @@
         <section id="home" class="hero">
             <div class="hero-content">
                 <div class="hero-text">
-                    <span class="greeting">Hello! I'm an aspiring</span>
+                    <span class="greeting">Hello! I'm</span>
                     <h1 class="hero-title">
-                        <span class="title-main">CSE student</span>
+                        <span class="title-main">Nafiz Ahmed</span>
                     </h1>
                     <p class="hero-description">
-                        High experienced in delivering solid and scalable web solutions with 
-                        the latest technology stack. Let's build your next awesome project together.
+                        A passionate Computer Science & Engineering student at KUET, currently in my 3rd year. 
+                        I love building innovative solutions using C, C++, Python, Java, and modern web technologies. 
+                        Always eager to learn and create impactful projects.
                     </p>
                     <div class="hero-buttons">
                         <a href="#contact" class="btn-primary">Get In Touch</a>
-                        <a href="resume.pdf" download class="btn-secondary">Download CV</a>
+                        <a href="#projects" class="btn-secondary">View Projects</a>
                     </div>
                 </div>
                 <div class="hero-image">
@@ -364,21 +414,52 @@
                     <div class="about-text">
                         <h2 class="section-title">About Me</h2>
                         <p class="about-description">
-                            I'm a passionate full-stack developer with expertise in modern web technologies. 
-                            I love creating efficient, scalable solutions that solve real-world problems.
+                            I'm a dedicated Computer Science & Engineering student at Khulna University of Engineering & Technology (KUET), 
+                            currently pursuing my Bachelor's degree in my 3rd year. My journey in programming started with C and has evolved 
+                            to include multiple languages and technologies. I'm passionate about problem-solving, algorithm design, and 
+                            creating meaningful software solutions that can make a difference.
                         </p>
                         <div class="about-details">
                             <div class="detail-item">
-                                <strong>Name:</strong> Nafiz
+                                <strong>Name:</strong> Nafiz Ahmed
                             </div>
                             <div class="detail-item">
-                                <strong>Experience:</strong> 2+ Years
+                                <strong>Study:</strong> CSE 3rd Year, KUET
                             </div>
                             <div class="detail-item">
-                                <strong>Location:</strong> Available Worldwide
+                                <strong>Location:</strong> Khulna, Bangladesh
                             </div>
                             <div class="detail-item">
-                                <strong>Email:</strong> nafiz@example.com
+                                <strong>Email:</strong> nafizahmed000@gmail.com
+                            </div>
+                            <div class="detail-item">
+                                <strong>Focus:</strong> Software Development & Problem Solving
+                            </div>
+                        </div>
+                        
+                        <!-- Skills Section -->
+                        <div class="skills-section">
+                            <h3>Technical Skills</h3>
+                            <div class="skills-grid">
+                                <div class="skill-category">
+                                    <h4>Programming Languages</h4>
+                                    <div class="skill-tags">
+                                        <span class="skill-tag">C</span>
+                                        <span class="skill-tag">C++</span>
+                                        <span class="skill-tag">Python</span>
+                                        <span class="skill-tag">Java</span>
+                                        <span class="skill-tag">JavaScript</span>
+                                    </div>
+                                </div>
+                                <div class="skill-category">
+                                    <h4>Web Technologies</h4>
+                                    <div class="skill-tags">
+                                        <span class="skill-tag">HTML5</span>
+                                        <span class="skill-tag">CSS3</span>
+                                        <span class="skill-tag">JavaScript</span>
+                                        <span class="skill-tag">ASP.NET</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
