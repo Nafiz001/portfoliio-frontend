@@ -12,9 +12,9 @@
     <style>
         /* Navigation Logo Styles */
         .nav-logo img {
-            height: 90px;
+            height: 60px;
             width: auto;
-            max-width: 280px;
+            max-width: 200px;
             object-fit: contain;
             transition: transform 0.3s ease, filter 0.3s ease;
             border-radius: 8px;
@@ -28,9 +28,9 @@
         /* Light theme adjustments for logo */
         [data-theme="light"] .nav-logo img {
             content: url('logo3.png');
-            height: 90px;
+            height: 60px;
             width: auto;
-            max-width: 280px;
+            max-width: 200px;
             object-fit: contain;
             filter: contrast(2);
             background: transparent;
@@ -45,32 +45,6 @@
             display: flex;
             align-items: center;
             text-decoration: none;
-        }
-        
-        /* Navigation Links Styles */
-        .nav-link {
-            font-size: 1.2rem;
-            font-weight: 500;
-            padding: 0.5rem 1rem;
-            transition: all 0.3s ease;
-            border-radius: 8px;
-        }
-        
-        .nav-link:hover {
-            background: rgba(var(--primary-color-rgb, 0, 255, 136), 0.1);
-            transform: translateY(-2px);
-        }
-        
-        .nav-menu {
-            display: flex;
-            gap: 1rem;
-            list-style: none;
-            margin: 0;
-            padding: 0;
-        }
-        
-        .nav-menu li {
-            margin: 0;
         }
         
         /* Mouse Follower Animation Styles */
@@ -162,7 +136,7 @@
         
         .project-image {
             position: relative;
-            height: 320px;
+            height: 200px;
             overflow: hidden;
         }
         
@@ -224,7 +198,7 @@
         
         .project-content h3 {
             margin: 0 0 0.5rem 0;
-            font-size: 1.7rem;
+            font-size: 1.25rem;
             font-weight: 600;
             color: var(--text-primary);
         }
@@ -232,8 +206,7 @@
         .project-content p {
             margin: 0 0 1rem 0;
             color: var(--text-secondary);
-            line-height: 1.6;
-            font-size: 1.2rem;
+            line-height: 1.5;
         }
         
         .project-technologies {
@@ -245,9 +218,9 @@
         .tech-tag {
             background: var(--primary-color);
             color: white;
-            padding: 0.4rem 1rem;
+            padding: 0.25rem 0.75rem;
             border-radius: 20px;
-            font-size: 0.85rem;
+            font-size: 0.75rem;
             font-weight: 500;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -351,8 +324,8 @@
         }
         
         .about-profile-image {
-            width: 380px;
-            height: 450px;
+            width: 300px;
+            height: 350px;
             object-fit: cover;
             border-radius: 20px;
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
@@ -369,101 +342,8 @@
             flex: 1;
         }
         
-        /* Additional font sizing for better readability */
-        .hero-title {
-            font-size: 4rem;
-            line-height: 1.2;
-        }
-        
-        .hero-description {
-            font-size: 1.4rem;
-            line-height: 1.6;
-        }
-        
-        .section-title {
-            font-size: 3.2rem;
-            margin-bottom: 2rem;
-        }
-        
-        .about-description {
-            font-size: 1.3rem;
-            line-height: 1.7;
-        }
-        
-        .detail-item {
-            font-size: 1.1rem;
-            margin-bottom: 0.8rem;
-        }
-        
-        .education-details {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            margin-top: 1rem;
-        }
-        
-        .detail-tag {
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
-            color: white;
-            padding: 0.3rem 0.8rem;
-            border-radius: 15px;
-            font-size: 0.8rem;
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        
-        .timeline-content h3 {
-            font-size: 1.4rem;
-            margin-bottom: 0.5rem;
-            color: var(--text-primary);
-        }
-        
-        .timeline-content h4 {
-            font-size: 1.2rem;
-            color: var(--primary-color);
-            margin-bottom: 0.8rem;
-        }
-        
-        .timeline-content p {
-            font-size: 1.1rem;
-            line-height: 1.6;
-            color: var(--text-secondary);
-            margin-bottom: 1rem;
-        }
-        
-        .timeline-date {
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--primary-color);
-            margin-bottom: 0.8rem;
-        }
-        
-        .contact-item h4 {
-            font-size: 1.3rem;
-        }
-        
-        .contact-item p {
-            font-size: 1.1rem;
-        }
-        
+        /* Responsive design for about section */
         @media (max-width: 768px) {
-            .hero-title {
-                font-size: 2.8rem;
-            }
-            
-            .hero-description {
-                font-size: 1.2rem;
-            }
-            
-            .section-title {
-                font-size: 2.5rem;
-            }
-            
-            .about-description {
-                font-size: 1.1rem;
-            }
-            
             .about-content {
                 flex-direction: column;
                 text-align: center;
@@ -471,61 +351,17 @@
             }
             
             .about-profile-image {
-                width: 320px;
-                height: 360px;
+                width: 250px;
+                height: 250px;
                 border-radius: 15px;
-            }
-            
-            .nav-link {
-                font-size: 1.15rem;
-                padding: 0.45rem 0.9rem;
             }
         }
         
         @media (max-width: 480px) {
-            .hero-title {
-                font-size: 2.4rem;
-            }
-            
-            .hero-description {
-                font-size: 1.1rem;
-            }
-            
-            .section-title {
-                font-size: 2.2rem;
-            }
-            
             .about-profile-image {
-                width: 300px;
-                height: 340px;
+                width: 200px;
+                height: 200px;
                 border-radius: 12px;
-            }
-            
-            .nav-logo img {
-                height: 75px;
-                max-width: 220px;
-            }
-            
-            [data-theme="light"] .nav-logo img {
-                height: 75px;
-                max-width: 220px;
-            }
-            
-            .project-image {
-                height: 280px;
-            }
-            
-            .project-content h3 {
-                font-size: 1.5rem;
-            }
-            
-            .project-content p {
-                font-size: 1.1rem;
-            }
-            
-            .nav-link {
-                font-size: 1.1rem;
-                padding: 0.4rem 0.8rem;
             }
         }
     </style>
@@ -655,41 +491,25 @@
                     <div class="timeline-marker"></div>
                     <div class="timeline-content">
                         <div class="timeline-date">2022 - Present</div>
-                        <h3>Bachelor of Science in Computer Science and Engineering (BSc)</h3>
+                        <h3>Bachelor of Science in Computer Science & Engineering</h3>
                         <h4>Khulna University of Engineering & Technology (KUET)</h4>
-                        <p>Currently pursuing my undergraduate degree in Computer Science and Engineering with focus on software development, algorithms, and system design.</p>
+                        <p>Currently in 3rd year, focusing on software development, algorithms, and data structures.</p>
                         <div class="education-details">
                             <span class="detail-tag">Ongoing</span>
-                            
-                            <span class="detail-tag">Expected Graduation: 2027</span>
+                            <span class="detail-tag">CSE</span>
                         </div>
                     </div>
                 </div>
                 <div class="timeline-item">
                     <div class="timeline-marker"></div>
                     <div class="timeline-content">
-                        <div class="timeline-date">2019 - 2021</div>
+                        <div class="timeline-date">2020 - 2022</div>
                         <h3>Higher Secondary Certificate (HSC)</h3>
-                        <h4>Notre Dame College, Dhaka</h4>
-                        <p>Completed higher secondary education in Science group with concentration in Mathematics, Physics, Chemistry, and Biology.</p>
+                        <h4>Science Group</h4>
+                        <p>Completed HSC with focus on Physics, Chemistry, Mathematics, and ICT.</p>
                         <div class="education-details">
                             <span class="detail-tag">Completed</span>
-                            <span class="detail-tag">GPA: 5.00/5.00</span>
-                            <span class="detail-tag">Science Group</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="timeline-item">
-                    <div class="timeline-marker"></div>
-                    <div class="timeline-content">
-                        <div class="timeline-date">2017 - 2019</div>
-                        <h3>Secondary School Certificate (SSC)</h3>
-                        <h4>Bogura Zilla School, Bogura</h4>
-                        <p>Completed secondary education with excellent academic performance in Science group, building strong foundation in mathematics and sciences.</p>
-                        <div class="education-details">
-                            <span class="detail-tag">Completed</span>
-                            <span class="detail-tag">GPA: 5.00/5.00</span>
-                            <span class="detail-tag">Science Group</span>
+                            <span class="detail-tag">Science</span>
                         </div>
                     </div>
                 </div>
@@ -706,7 +526,7 @@
                 <!-- Wordle Project -->
                 <div class="project-card" data-aos="fade-up">
                     <div class="project-image">
-                        <img src="project_2_Wordle.png" alt="Wordle Game" onerror="this.src='https://via.placeholder.com/400x320/6b73ff/ffffff?text=WORDLE+GAME'">
+                        <img src="https://via.placeholder.com/400x250/333/fff?text=Wordle+Game" alt="Wordle" onerror="this.src='https://via.placeholder.com/400x250/333/fff?text=Wordle+Game'">
                         <div class="project-overlay">
                             <div class="project-links">
                                 <a href="https://github.com/Nafiz001/Java" target="_blank" class="project-link"><i class="fab fa-github"></i></a>
@@ -725,7 +545,7 @@
                 <!-- Payoo Project -->
                 <div class="project-card" data-aos="fade-up">
                     <div class="project-image">
-                        <img src="project_3_Payoo.png" alt="Payoo Mobile Banking" onerror="this.src='https://via.placeholder.com/400x320/00ff88/ffffff?text=PAYOO+BANKING'">
+                        <img src="https://via.placeholder.com/400x250/1a1a1a/00ff88?text=Payoo+Banking" alt="Payoo" onerror="this.src='https://via.placeholder.com/400x250/1a1a1a/00ff88?text=Payoo+Banking'">
                         <div class="project-overlay">
                             <div class="project-links">
                                 <a href="https://nafiz001.github.io/Payoo/" target="_blank" class="project-link"><i class="fas fa-external-link-alt"></i></a>
@@ -749,10 +569,10 @@
                 <!-- ShopCircuit Project -->
                 <div class="project-card" data-aos="fade-up">
                     <div class="project-image">
-                        <img src="project_4_ShopCircuit.png" alt="ShopCircuit E-commerce" onerror="this.src='https://via.placeholder.com/400x320/2c3e50/ffffff?text=SHOPCIRCUIT'">
+                        <img src="https://via.placeholder.com/400x250/0a0a0a/00ff88?text=ShopCircuit+E-commerce" alt="ShopCircuit" onerror="this.src='https://via.placeholder.com/400x250/0a0a0a/00ff88?text=ShopCircuit+E-commerce'">
                         <div class="project-overlay">
                             <div class="project-links">
-                                <a href="https://shopcircuit.vercel.app/" target="_blank" class="project-link"><i class="fas fa-external-link-alt"></i></a>
+                                <a href="#" target="_blank" class="project-link"><i class="fab fa-github"></i></a>
                             </div>
                         </div>
                     </div>
