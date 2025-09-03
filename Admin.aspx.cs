@@ -151,9 +151,14 @@ public partial class _Admin : System.Web.UI.Page
             }
             else
             {
-                lblProjectMessage.Text = "Please provide an image URL or upload a file.";
-                lblProjectMessage.ForeColor = System.Drawing.Color.Red;
-                return;
+                // Only require image for new projects, not for updates
+                if (ViewState["UpdateProjectId"] == null)
+                {
+                    lblProjectMessage.Text = "Please provide an image URL or upload a file.";
+                    lblProjectMessage.ForeColor = System.Drawing.Color.Red;
+                    return;
+                }
+                // For updates, if no new image is provided, we'll keep the existing image
             }
 
             using (SqlConnection con = new SqlConnection(connectionString))
@@ -175,11 +180,18 @@ public partial class _Admin : System.Web.UI.Page
                                  GithubUrl = @GithubUrl, LiveUrl = @LiveUrl 
                                  WHERE ProjectId = @ProjectId";
                     }
-                    else
+                    else if (imageUrl != null)
                     {
                         // Update with URL image
                         query = @"UPDATE Projects SET Title = @Title, Description = @Description, Technologies = @Technologies, 
                                  ImageUrl = @ImageUrl, ImageData = NULL, ContentType = NULL,
+                                 GithubUrl = @GithubUrl, LiveUrl = @LiveUrl 
+                                 WHERE ProjectId = @ProjectId";
+                    }
+                    else
+                    {
+                        // Update without changing image (keep existing image)
+                        query = @"UPDATE Projects SET Title = @Title, Description = @Description, Technologies = @Technologies, 
                                  GithubUrl = @GithubUrl, LiveUrl = @LiveUrl 
                                  WHERE ProjectId = @ProjectId";
                     }
@@ -215,16 +227,18 @@ public partial class _Admin : System.Web.UI.Page
                 cmd.Parameters.AddWithValue("@GithubUrl", string.IsNullOrEmpty(txtProjectGithub.Text.Trim()) ? (object)DBNull.Value : txtProjectGithub.Text.Trim());
                 cmd.Parameters.AddWithValue("@LiveUrl", string.IsNullOrEmpty(txtProjectLive.Text.Trim()) ? (object)DBNull.Value : txtProjectLive.Text.Trim());
                 
-                // Add image-specific parameters
+                // Add image-specific parameters only if they are being updated
                 if (imageData != null)
                 {
                     cmd.Parameters.AddWithValue("@ImageData", imageData);
                     cmd.Parameters.AddWithValue("@ContentType", contentType);
                 }
-                else
+                else if (imageUrl != null)
                 {
                     cmd.Parameters.AddWithValue("@ImageUrl", imageUrl);
                 }
+                // If both imageData and imageUrl are null (update without changing image), 
+                // no image parameters are added
                 
                 con.Open();
                 cmd.ExecuteNonQuery();

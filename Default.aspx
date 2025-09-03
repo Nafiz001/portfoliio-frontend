@@ -247,7 +247,7 @@
         /* About Section Styles */
         .about-content {
             display: flex;
-            align-items: flex-start;
+            align-items: center;
             gap: 3rem;
             max-width: 1200px;
             margin: 0 auto;
