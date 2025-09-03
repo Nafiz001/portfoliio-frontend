@@ -115,7 +115,9 @@ public partial class _Admin : System.Web.UI.Page
     {
         try
         {
-            string imageUrl = "";
+            byte[] imageData = null;
+            string contentType = null;
+            string imageUrl = null;
             
             // Handle image upload or URL
             if (rbImageFile.Checked && fuProjectImage.HasFile)
@@ -138,20 +140,10 @@ public partial class _Admin : System.Web.UI.Page
                     return;
                 }
                 
-                // Create uploads directory if it doesn't exist
-                string uploadsPath = Server.MapPath("~/uploads/");
-                if (!Directory.Exists(uploadsPath))
-                {
-                    Directory.CreateDirectory(uploadsPath);
-                }
-                
-                // Generate unique filename
-                string fileName = DateTime.Now.ToString("yyyyMMddHHmmss") + "_" + fuProjectImage.FileName;
-                string filePath = Path.Combine(uploadsPath, fileName);
-                
-                // Save file
-                fuProjectImage.SaveAs(filePath);
-                imageUrl = "~/uploads/" + fileName;
+                // Read file data into byte array
+                imageData = new byte[fuProjectImage.PostedFile.ContentLength];
+                fuProjectImage.PostedFile.InputStream.Read(imageData, 0, fuProjectImage.PostedFile.ContentLength);
+                contentType = fuProjectImage.PostedFile.ContentType;
             }
             else if (rbImageUrl.Checked && !string.IsNullOrEmpty(txtProjectImage.Text.Trim()))
             {
@@ -174,28 +166,65 @@ public partial class _Admin : System.Web.UI.Page
                 {
                     // Update existing project
                     int projectId = (int)ViewState["UpdateProjectId"];
-                    query = @"UPDATE Projects SET Title = @Title, Description = @Description, Technologies = @Technologies, 
-                             ImageUrl = @ImageUrl, GithubUrl = @GithubUrl, LiveUrl = @LiveUrl 
-                             WHERE ProjectId = @ProjectId";
+                    
+                    if (imageData != null)
+                    {
+                        // Update with new binary image
+                        query = @"UPDATE Projects SET Title = @Title, Description = @Description, Technologies = @Technologies, 
+                                 ImageData = @ImageData, ContentType = @ContentType, ImageUrl = NULL,
+                                 GithubUrl = @GithubUrl, LiveUrl = @LiveUrl 
+                                 WHERE ProjectId = @ProjectId";
+                    }
+                    else
+                    {
+                        // Update with URL image
+                        query = @"UPDATE Projects SET Title = @Title, Description = @Description, Technologies = @Technologies, 
+                                 ImageUrl = @ImageUrl, ImageData = NULL, ContentType = NULL,
+                                 GithubUrl = @GithubUrl, LiveUrl = @LiveUrl 
+                                 WHERE ProjectId = @ProjectId";
+                    }
+                    
                     cmd = new SqlCommand(query, con);
                     cmd.Parameters.AddWithValue("@ProjectId", projectId);
                 }
                 else
                 {
                     // Add new project
-                    query = @"INSERT INTO Projects (Title, Description, Technologies, ImageUrl, GithubUrl, LiveUrl, CreatedDate, IsActive) 
-                             VALUES (@Title, @Description, @Technologies, @ImageUrl, @GithubUrl, @LiveUrl, @CreatedDate, @IsActive)";
+                    if (imageData != null)
+                    {
+                        // Insert with binary image
+                        query = @"INSERT INTO Projects (Title, Description, Technologies, ImageData, ContentType, GithubUrl, LiveUrl, CreatedDate, IsActive) 
+                                 VALUES (@Title, @Description, @Technologies, @ImageData, @ContentType, @GithubUrl, @LiveUrl, @CreatedDate, @IsActive)";
+                    }
+                    else
+                    {
+                        // Insert with URL image
+                        query = @"INSERT INTO Projects (Title, Description, Technologies, ImageUrl, GithubUrl, LiveUrl, CreatedDate, IsActive) 
+                                 VALUES (@Title, @Description, @Technologies, @ImageUrl, @GithubUrl, @LiveUrl, @CreatedDate, @IsActive)";
+                    }
+                    
                     cmd = new SqlCommand(query, con);
                     cmd.Parameters.AddWithValue("@CreatedDate", DateTime.Now);
                     cmd.Parameters.AddWithValue("@IsActive", true);
                 }
                 
+                // Add common parameters
                 cmd.Parameters.AddWithValue("@Title", txtProjectTitle.Text.Trim());
                 cmd.Parameters.AddWithValue("@Description", txtProjectDescription.Text.Trim());
                 cmd.Parameters.AddWithValue("@Technologies", txtProjectTech.Text.Trim());
-                cmd.Parameters.AddWithValue("@ImageUrl", imageUrl);
                 cmd.Parameters.AddWithValue("@GithubUrl", string.IsNullOrEmpty(txtProjectGithub.Text.Trim()) ? (object)DBNull.Value : txtProjectGithub.Text.Trim());
                 cmd.Parameters.AddWithValue("@LiveUrl", string.IsNullOrEmpty(txtProjectLive.Text.Trim()) ? (object)DBNull.Value : txtProjectLive.Text.Trim());
+                
+                // Add image-specific parameters
+                if (imageData != null)
+                {
+                    cmd.Parameters.AddWithValue("@ImageData", imageData);
+                    cmd.Parameters.AddWithValue("@ContentType", contentType);
+                }
+                else
+                {
+                    cmd.Parameters.AddWithValue("@ImageUrl", imageUrl);
+                }
                 
                 con.Open();
                 cmd.ExecuteNonQuery();
@@ -295,7 +324,9 @@ public partial class _Admin : System.Web.UI.Page
         {
             using (SqlConnection con = new SqlConnection(connectionString))
             {
-                string query = "SELECT ProjectId, Title, Description, Technologies, ImageUrl, GithubUrl, LiveUrl FROM Projects WHERE IsActive = 1 ORDER BY CreatedDate DESC";
+                string query = @"SELECT ProjectId, Title, Description, Technologies, ImageUrl, 
+                               CASE WHEN ImageData IS NOT NULL THEN 'Database' ELSE 'URL' END as ImageSource,
+                               GithubUrl, LiveUrl FROM Projects WHERE IsActive = 1 ORDER BY CreatedDate DESC";
                 SqlCommand cmd = new SqlCommand(query, con);
                 con.Open();
                 SqlDataAdapter da = new SqlDataAdapter(cmd);
@@ -413,7 +444,7 @@ public partial class _Admin : System.Web.UI.Page
         {
             using (SqlConnection con = new SqlConnection(connectionString))
             {
-                string query = "SELECT Title, Description, ImagePath, LiveUrl, GithubUrl, Technologies FROM Projects WHERE ProjectId = @ProjectId";
+                string query = "SELECT Title, Description, ImageUrl, LiveUrl, GithubUrl, Technologies, ImageData FROM Projects WHERE ProjectId = @ProjectId";
                 using (SqlCommand cmd = new SqlCommand(query, con))
                 {
                     cmd.Parameters.AddWithValue("@ProjectId", projectId);
@@ -429,21 +460,34 @@ public partial class _Admin : System.Web.UI.Page
                             // Fill the form with existing data
                             txtProjectTitle.Text = reader["Title"].ToString();
                             txtProjectDescription.Text = reader["Description"].ToString();
-                            txtProjectImage.Text = reader["ImagePath"].ToString();
-                            txtProjectLive.Text = reader["LiveUrl"].ToString();
-                            txtProjectGithub.Text = reader["GithubUrl"].ToString();
+                            txtProjectLive.Text = reader["LiveUrl"] != DBNull.Value ? reader["LiveUrl"].ToString() : "";
+                            txtProjectGithub.Text = reader["GithubUrl"] != DBNull.Value ? reader["GithubUrl"].ToString() : "";
                             txtProjectTech.Text = reader["Technologies"].ToString();
+                            
+                            // Handle image data
+                            if (reader["ImageData"] != DBNull.Value)
+                            {
+                                // Image is stored in database
+                                txtProjectImage.Text = "Image stored in database";
+                                rbImageUrl.Checked = false;
+                                rbImageFile.Checked = true;
+                                pnlImageUrl.Visible = false;
+                                pnlImageFile.Visible = true;
+                            }
+                            else if (reader["ImageUrl"] != DBNull.Value)
+                            {
+                                // Image is a URL
+                                txtProjectImage.Text = reader["ImageUrl"].ToString();
+                                rbImageUrl.Checked = true;
+                                rbImageFile.Checked = false;
+                                pnlImageUrl.Visible = true;
+                                pnlImageFile.Visible = false;
+                            }
                             
                             // Change button text to indicate update mode
                             btnAddProject.Text = "Update Project";
-                            lblProjectMessage.Text = "Editing project. Modify the details and click 'Update Project'.";
+                            lblProjectMessage.Text = "Editing project. Modify the details and click 'Update Project'. Note: To change database image, upload a new file.";
                             lblProjectMessage.CssClass = "success-message";
-                            
-                            // Set the image option to URL since we're loading existing data
-                            rbImageUrl.Checked = true;
-                            rbImageFile.Checked = false;
-                            pnlImageUrl.Visible = true;
-                            pnlImageFile.Visible = false;
                         }
                     }
                 }

@@ -23,18 +23,25 @@ public partial class _Default : System.Web.UI.Page
         {
             using (SqlConnection con = new SqlConnection(connectionString))
             {
-                string query = "SELECT ProjectId, Title, Description, Technologies, ImageUrl, GithubUrl, LiveUrl FROM Projects WHERE IsActive = 1 ORDER BY CreatedDate DESC";
+                string query = "SELECT ProjectId, Title, Description, Technologies, ImageUrl, ImageData, GithubUrl, LiveUrl FROM Projects WHERE IsActive = 1 ORDER BY CreatedDate DESC";
                 SqlCommand cmd = new SqlCommand(query, con);
                 con.Open();
                 SqlDataAdapter da = new SqlDataAdapter(cmd);
                 DataTable dt = new DataTable();
                 da.Fill(dt);
                 
-                // Process ImageUrl to handle relative paths
+                // Process image URLs to handle relative paths and database images
                 foreach (DataRow row in dt.Rows)
                 {
-                    if (row["ImageUrl"] != DBNull.Value)
+                    // Check if image is stored in database
+                    if (row["ImageData"] != DBNull.Value)
                     {
+                        // Image is in database, use ImageHandler.aspx to serve it
+                        row["ImageUrl"] = "ImageHandler.aspx?id=" + row["ProjectId"].ToString();
+                    }
+                    else if (row["ImageUrl"] != DBNull.Value)
+                    {
+                        // Image is a URL, handle relative paths
                         string imageUrl = row["ImageUrl"].ToString();
                         if (imageUrl.StartsWith("~/"))
                         {

@@ -211,8 +211,8 @@ window.addEventListener('scroll', () => {
 // Load content when DOM is ready
 document.addEventListener('DOMContentLoaded', async () => {
     initializeTheme();
-    await loadProjects();
-    await loadEducation();
+    // await loadProjects(); // Disabled - using ASP.NET server-side rendering
+    // await loadEducation(); // Disabled - using ASP.NET server-side rendering
     initContactForm();
     initAnimations();
 });
@@ -399,7 +399,7 @@ function initAnimations() {
 
 // Load projects on page load
 document.addEventListener('DOMContentLoaded', () => {
-    loadProjects();
+    // loadProjects(); // Disabled - using ASP.NET server-side rendering
 });
 
 // Education timeline animations

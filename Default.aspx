@@ -15,21 +15,93 @@
     <style>
         /* Navigation Logo Styles */
         .nav-logo img {
-            height: 40px;
+            height: 60px;
             width: auto;
-            max-width: 150px;
+            max-width: 200px;
             object-fit: contain;
-            transition: transform 0.3s ease;
+            transition: transform 0.3s ease, filter 0.3s ease;
+            
+            border-radius: 8px;
+            
         }
         
         .nav-logo img:hover {
             transform: scale(1.05);
+            filter: brightness(1.2) contrast(1.2);
+        }
+        
+        /* Light theme adjustments for logo */
+        [data-theme="light"] .nav-logo img {
+            content: url('logo3.png');
+            height: 60px;
+            width: auto;
+            max-width: 200px;
+            object-fit: contain;
+            filter: contrast(2);
+            
+            background: transparent;
+            mix-blend-mode: normal;
+        }
+        
+        [data-theme="light"] .nav-logo img:hover {
+            filter: brightness(0.9) contrast(2.9);
         }
         
         .nav-logo a {
             display: flex;
             align-items: center;
             text-decoration: none;
+        }
+        
+        /* Mouse Follower Animation Styles */
+        .mouse-follower {
+            position: fixed;
+            width: 30px;
+            height: 30px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.7;
+            transform: translate(-50%, -50%);
+            transition: transform 0.1s ease, opacity 0.2s ease;
+            mix-blend-mode: difference;
+        }
+
+        .mouse-follower-delayed {
+            position: fixed;
+            width: 50px;
+            height: 50px;
+            border: 2px solid var(--primary-color);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9998;
+            opacity: 0.5;
+            transform: translate(-50%, -50%);
+            transition: transform 0.2s ease, opacity 0.2s ease;
+        }
+
+        /* Hide default cursor on main sections */
+        .hero, .about, .projects, .contact, .education {
+            cursor: none;
+        }
+
+        /* Show pointer on interactive elements */
+        a, button, .btn-primary, .btn-secondary, .project-card, .theme-toggle {
+            cursor: pointer !important;
+        }
+
+        /* Enhanced hover effects for mouse follower */
+        .mouse-follower.hover-active {
+            transform: translate(-50%, -50%) scale(1.5);
+            opacity: 1;
+            background: var(--primary-light, #00ff88);
+        }
+
+        .mouse-follower-delayed.hover-active {
+            transform: translate(-50%, -50%) scale(2);
+            opacity: 0.8;
+            border-color: var(--primary-light, #00ff88);
         }
         
         .project-card {
@@ -235,7 +307,7 @@
             <div class="nav-container">
                 <div class="nav-logo">
                     <a href="#home">
-                        <img src="logo.png" alt="Nafiz Portfolio Logo" />
+                        <img src="logo4.png" alt="Nafiz Portfolio Logo" />
                     </a>
                 </div>
                 <div class="nav-right">
@@ -503,6 +575,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             initializeTheme();
             initSmoothScrolling();
+            initMouseFollower(); // Add mouse follower
             
             // Add theme toggle event listener
             const themeToggle = document.querySelector('.theme-toggle');
@@ -510,6 +583,75 @@
                 themeToggle.addEventListener('click', toggleTheme);
             }
         });
+
+        // Mouse follower functionality
+        function initMouseFollower() {
+            const follower = document.getElementById('mouseFollower');
+            const followerDelayed = document.getElementById('mouseFollowerDelayed');
+            
+            if (!follower || !followerDelayed) return;
+            
+            let mouseX = 0, mouseY = 0;
+            let followerX = 0, followerY = 0;
+            let delayedX = 0, delayedY = 0;
+            
+            // Track mouse movement
+            document.addEventListener('mousemove', (e) => {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+            });
+            
+            // Smooth animation loop
+            function animate() {
+                // Smooth following effect with different speeds
+                followerX += (mouseX - followerX) * 0.9;
+                followerY += (mouseY - followerY) * 0.9;
+                
+                delayedX += (mouseX - delayedX) * 0.3;
+                delayedY += (mouseY - delayedY) * 0.3;
+                
+                // Update positions
+                follower.style.left = followerX + 'px';
+                follower.style.top = followerY + 'px';
+                
+                followerDelayed.style.left = delayedX + 'px';
+                followerDelayed.style.top = delayedY + 'px';
+                
+                requestAnimationFrame(animate);
+            }
+            
+            animate();
+            
+            // Interactive hover effects
+            const interactiveElements = document.querySelectorAll('a, button, .project-card, .btn-primary, .btn-secondary, .theme-toggle, .nav-link');
+            
+            interactiveElements.forEach(element => {
+                element.addEventListener('mouseenter', () => {
+                    follower.classList.add('hover-active');
+                    followerDelayed.classList.add('hover-active');
+                });
+                
+                element.addEventListener('mouseleave', () => {
+                    follower.classList.remove('hover-active');
+                    followerDelayed.classList.remove('hover-active');
+                });
+            });
+            
+            // Hide followers when mouse leaves window
+            document.addEventListener('mouseleave', () => {
+                follower.style.opacity = '0';
+                followerDelayed.style.opacity = '0';
+            });
+            
+            document.addEventListener('mouseenter', () => {
+                follower.style.opacity = '0.7';
+                followerDelayed.style.opacity = '0.5';
+            });
+        }
     </script>
+    
+    <!-- Mouse Follower Elements -->
+    <div class="mouse-follower" id="mouseFollower"></div>
+    <div class="mouse-follower-delayed" id="mouseFollowerDelayed"></div>
 </body>
 </html>
