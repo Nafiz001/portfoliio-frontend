@@ -270,9 +270,9 @@
                             <label style="color: #ccc;">Technologies *</label>
                             <asp:TextBox ID="txtProjectTech" runat="server" CssClass="form-control" placeholder="React, Node.js, MongoDB"></asp:TextBox>
                         </div>
-                        <div style="margin-bottom: 1rem;">
+                        <div style="margin-bottom: 1rem; text-align: center;">
                             <asp:Button ID="btnAddProject" runat="server" Text="Add Project" CssClass="btn-admin" OnClick="btnAddProject_Click" />
-                            <asp:Button ID="btnCancelProject" runat="server" Text="Cancel" CssClass="btn-secondary" OnClick="btnCancelProject_Click" style="margin-left: 10px;" />
+                            <asp:Button ID="btnCancelProject" runat="server" Text="Cancel" CssClass="btn-secondary" OnClick="btnCancelProject_Click" style="margin-left: 10px; margin-top: 15px;" />
                         </div>
                         <asp:Label ID="lblProjectMessage" runat="server" CssClass="success-message"></asp:Label>
                     </div>
@@ -326,9 +326,9 @@
                             <label style="color: #ccc;">Group/Field</label>
                             <asp:TextBox ID="txtGroup" runat="server" CssClass="form-control" placeholder="Science, Engineering, etc."></asp:TextBox>
                         </div>
-                        <div style="margin-bottom: 1rem;">
+                        <div style="margin-bottom: 1rem; text-align: center;">
                             <asp:Button ID="btnAddEducation" runat="server" Text="Add Education" CssClass="btn-admin" OnClick="btnAddEducation_Click" />
-                            <asp:Button ID="btnCancelEducation" runat="server" Text="Cancel" CssClass="btn-secondary" OnClick="btnCancelEducation_Click" style="margin-left: 10px;" />
+                            <asp:Button ID="btnCancelEducation" runat="server" Text="Cancel" CssClass="btn-secondary" OnClick="btnCancelEducation_Click" style="margin-left: 10px; margin-top: 15px;" />
                         </div>
                         <asp:Label ID="lblEducationMessage" runat="server" CssClass="success-message"></asp:Label>
                     </div>
