@@ -2,6 +2,7 @@ using System;
 using System.Data;
 using System.Data.SqlClient;
 using System.Configuration;
+using System.Web;
 using System.Web.UI;
 
 public partial class _Default : System.Web.UI.Page
@@ -12,8 +13,60 @@ public partial class _Default : System.Web.UI.Page
     {
         if (!IsPostBack)
         {
+            // Track visitor and handle cookies
+            HandleVisitorTracking();
             LoadProjects();
             LoadEducation();
+        }
+    }
+
+    private void HandleVisitorTracking()
+    {
+        try
+        {
+            // Simple visitor tracking with basic cookies
+            HttpCookie visitorCookie = Request.Cookies["VisitorInfo"];
+            
+            if (visitorCookie == null)
+            {
+                // First time visitor - create visitor cookie
+                HttpCookie newVisitorCookie = new HttpCookie("VisitorInfo");
+                newVisitorCookie.Values["FirstVisit"] = DateTime.Now.ToString();
+                newVisitorCookie.Values["VisitCount"] = "1";
+                newVisitorCookie.Values["VisitorId"] = Guid.NewGuid().ToString();
+                newVisitorCookie.Expires = DateTime.Now.AddDays(365); // 1 year
+                Response.Cookies.Add(newVisitorCookie);
+                
+                // Set session for first-time visitor
+                Session["IsFirstVisit"] = true;
+                Session["VisitCount"] = 1;
+            }
+            else
+            {
+                // Returning visitor - update visit count
+                int visitCount = 1;
+                if (visitorCookie.Values["VisitCount"] != null)
+                {
+                    int.TryParse(visitorCookie.Values["VisitCount"], out visitCount);
+                }
+                visitCount++;
+                
+                HttpCookie updatedVisitorCookie = new HttpCookie("VisitorInfo");
+                updatedVisitorCookie.Values["FirstVisit"] = visitorCookie.Values["FirstVisit"];
+                updatedVisitorCookie.Values["VisitCount"] = visitCount.ToString();
+                updatedVisitorCookie.Values["VisitorId"] = visitorCookie.Values["VisitorId"];
+                updatedVisitorCookie.Values["LastVisit"] = DateTime.Now.ToString();
+                updatedVisitorCookie.Expires = DateTime.Now.AddDays(365);
+                Response.Cookies.Add(updatedVisitorCookie);
+                
+                Session["IsFirstVisit"] = false;
+                Session["VisitCount"] = visitCount;
+            }
+        }
+        catch (Exception ex)
+        {
+            // Log error but don't break the page
+            System.Diagnostics.Debug.WriteLine("Error in visitor tracking: " + ex.Message);
         }
     }
 

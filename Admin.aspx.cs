@@ -2,6 +2,7 @@ using System;
 using System.Data;
 using System.Data.SqlClient;
 using System.Configuration;
+using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.IO;
@@ -20,13 +21,107 @@ public partial class _Admin : System.Web.UI.Page
 
     private void CheckSession()
     {
+        // First check active session
         if (Session["AdminLoggedIn"] != null && (bool)Session["AdminLoggedIn"])
         {
             ShowDashboard();
+            return;
         }
-        else
+        
+        // Check for "Remember Me" cookie
+        HttpCookie rememberMeCookie = Request.Cookies["AdminRememberMe"];
+        if (rememberMeCookie != null && !string.IsNullOrEmpty(rememberMeCookie.Value))
         {
-            ShowLogin();
+            try
+            {
+                // Validate the remember me token
+                string[] cookieData = rememberMeCookie.Value.Split('|');
+                if (cookieData.Length == 2)
+                {
+                    string username = cookieData[0];
+                    string token = cookieData[1];
+                    
+                    // In a real application, validate the token against database
+                    // For now, we'll do a simple check
+                    if (ValidateRememberMeToken(username, token))
+                    {
+                        // Auto-login the user
+                        Session["AdminLoggedIn"] = true;
+                        Session["AdminUsername"] = username;
+                        Session["AutoLoggedIn"] = true; // Track auto-login
+                        ShowDashboard();
+                        return;
+                    }
+                    else
+                    {
+                        // Invalid token, remove cookie
+                        RemoveRememberMeCookie();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("Remember me cookie error: " + ex.Message);
+                RemoveRememberMeCookie();
+            }
+        }
+        
+        ShowLogin();
+    }
+    
+    private bool ValidateRememberMeToken(string username, string token)
+    {
+        try
+        {
+            using (SqlConnection con = new SqlConnection(connectionString))
+            {
+                // In a real application, you would store remember me tokens in database
+                // For now, we'll use a simple hash validation
+                string expectedToken = GenerateRememberMeToken(username);
+                return token == expectedToken;
+            }
+        }
+        catch
+        {
+            return false;
+        }
+    }
+    
+    private string GenerateRememberMeToken(string username)
+    {
+        // Simple token generation - in production use proper cryptographic methods
+        return System.Web.Security.FormsAuthentication.HashPasswordForStoringInConfigFile(
+            username + "RememberMeSecret", "SHA1");
+    }
+    
+    private void SetRememberMeCookie(string username)
+    {
+        try
+        {
+            string token = GenerateRememberMeToken(username);
+            HttpCookie rememberMeCookie = new HttpCookie("AdminRememberMe", username + "|" + token);
+            rememberMeCookie.Expires = DateTime.Now.AddDays(30); // Remember for 30 days
+            rememberMeCookie.HttpOnly = true; // Security: prevent JavaScript access
+            rememberMeCookie.Secure = false; // Set to true in production with HTTPS
+            Response.Cookies.Add(rememberMeCookie);
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine("Error setting remember me cookie: " + ex.Message);
+        }
+    }
+    
+    private void RemoveRememberMeCookie()
+    {
+        try
+        {
+            HttpCookie rememberMeCookie = new HttpCookie("AdminRememberMe");
+            rememberMeCookie.Expires = DateTime.Now.AddDays(-1); // Expire the cookie
+            Response.Cookies.Add(rememberMeCookie);
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine("Error removing remember me cookie: " + ex.Message);
         }
     }
 
@@ -59,14 +154,54 @@ public partial class _Admin : System.Web.UI.Page
                 
                 if (count > 0)
                 {
+                    // Set session variables
                     Session["AdminLoggedIn"] = true;
                     Session["AdminUsername"] = txtUsername.Text.Trim();
+                    Session["LoginTime"] = DateTime.Now;
+                    
+                    // Handle "Remember Me" functionality
+                    // Note: You would need to add a checkbox for "Remember Me" in the UI
+                    // For now, we'll set it based on a hypothetical checkbox
+                    // CheckBox chkRememberMe = (CheckBox)FindControl("chkRememberMe");
+                    // if (chkRememberMe != null && chkRememberMe.Checked)
+                    // {
+                    //     SetRememberMeCookie(txtUsername.Text.Trim());
+                    // }
+                    
+                    // Set login success cookie
+                    HttpCookie loginCookie = new HttpCookie("LastLogin", DateTime.Now.ToString());
+                    loginCookie.Expires = DateTime.Now.AddDays(30);
+                    Response.Cookies.Add(loginCookie);
+                    
                     ShowDashboard();
                     lblError.Text = "";
+                    
+                    // Log successful login
+                    System.Diagnostics.Debug.WriteLine("Admin login successful: " + txtUsername.Text.Trim() + " at " + DateTime.Now);
                 }
                 else
                 {
                     lblError.Text = "Invalid username or password.";
+                    
+                    // Track failed login attempts in cookie
+                    HttpCookie failedLoginCookie = Request.Cookies["FailedLoginAttempts"];
+                    int attempts = 1;
+                    if (failedLoginCookie != null)
+                    {
+                        int.TryParse(failedLoginCookie.Value, out attempts);
+                        attempts++;
+                    }
+                    
+                    HttpCookie newFailedLoginCookie = new HttpCookie("FailedLoginAttempts", attempts.ToString());
+                    newFailedLoginCookie.Expires = DateTime.Now.AddMinutes(30); // Reset after 30 minutes
+                    Response.Cookies.Add(newFailedLoginCookie);
+                    
+                    // Add security delay for multiple failed attempts
+                    if (attempts > 3)
+                    {
+                        lblError.Text = "Too many failed attempts. Please wait before trying again.";
+                        System.Threading.Thread.Sleep(2000); // 2 second delay
+                    }
                 }
             }
         }
@@ -79,8 +214,27 @@ public partial class _Admin : System.Web.UI.Page
 
     protected void btnLogout_Click(object sender, EventArgs e)
     {
+        // Clear all session data
         Session.Clear();
+        Session.Abandon();
+        
+        // Remove remember me cookie
+        RemoveRememberMeCookie();
+        
+        // Clear failed login attempts cookie
+        HttpCookie failedLoginCookie = new HttpCookie("FailedLoginAttempts");
+        failedLoginCookie.Expires = DateTime.Now.AddDays(-1);
+        Response.Cookies.Add(failedLoginCookie);
+        
+        // Set logout time cookie (for analytics)
+        HttpCookie logoutCookie = new HttpCookie("LastLogout", DateTime.Now.ToString());
+        logoutCookie.Expires = DateTime.Now.AddDays(30);
+        Response.Cookies.Add(logoutCookie);
+        
         ShowLogin();
+        
+        // Log successful logout
+        System.Diagnostics.Debug.WriteLine("Admin logout at " + DateTime.Now);
     }
 
     protected void btnShowProjects_Click(object sender, EventArgs e)

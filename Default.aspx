@@ -729,7 +729,165 @@
                 followerDelayed.style.opacity = '0.5';
             });
         }
+        
+        // Simple Cookie Management Functions
+        function setCookie(name, value, days) {
+            const expires = new Date();
+            expires.setTime(expires.getTime() + (days * 24 * 60 * 60 * 1000));
+            document.cookie = name + "=" + value + ";expires=" + expires.toUTCString() + ";path=/";
+        }
+        
+        function getCookie(name) {
+            const nameEQ = name + "=";
+            const ca = document.cookie.split(';');
+            for(let i = 0; i < ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+                if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+            }
+            return null;
+        }
+        
+        function showCookieConsent() {
+            if (!getCookie('CookieAccepted')) {
+                const consentBanner = document.getElementById('cookieConsent');
+                if (consentBanner) {
+                    consentBanner.style.display = 'block';
+                    setTimeout(() => {
+                        consentBanner.classList.add('show');
+                    }, 100);
+                }
+            }
+        }
+        
+        function acceptCookies() {
+            setCookie('CookieAccepted', 'true', 365);
+            setCookie('CookieAcceptedDate', new Date().toISOString(), 365);
+            hideCookieConsent();
+        }
+        
+        function hideCookieConsent() {
+            const consentBanner = document.getElementById('cookieConsent');
+            if (consentBanner) {
+                consentBanner.classList.remove('show');
+                setTimeout(() => {
+                    consentBanner.style.display = 'none';
+                }, 300);
+            }
+        }
+        
+        // Initialize cookie consent on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            showCookieConsent();
+        });
     </script>
+    
+    <!-- Simple Cookie Consent Banner -->
+    <div id="cookieConsent" class="cookie-consent" style="display: none;">
+        <div class="cookie-consent-content">
+            <div class="cookie-consent-text">
+                <h4><i class="fas fa-cookie-bite"></i> Cookie Notice</h4>
+                <p>This website uses cookies to enhance your browsing experience and provide personalized content. By continuing to use this site, you consent to our use of cookies.</p>
+            </div>
+            <div class="cookie-consent-buttons">
+                <button onclick="acceptCookies()" class="btn-cookie-accept">Accept Cookies</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Simple Cookie Consent Styles -->
+    <style>
+        .cookie-consent {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--card-background, #1a1a1a);
+            border-top: 1px solid var(--border-color, #333);
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+            z-index: 10000;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .cookie-consent.show {
+            transform: translateY(0);
+        }
+        
+        .cookie-consent-content {
+            padding: 1.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 2rem;
+        }
+        
+        .cookie-consent-text h4 {
+            color: var(--text-primary, #fff);
+            margin: 0 0 0.5rem 0;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .cookie-consent-text p {
+            color: var(--text-secondary, #ccc);
+            margin: 0;
+            line-height: 1.5;
+            font-size: 0.9rem;
+        }
+        
+        .cookie-consent-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-shrink: 0;
+        }
+        
+        .btn-cookie-accept {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            background: var(--primary-color, #00a8ff);
+            color: white;
+        }
+        
+        .btn-cookie-accept:hover {
+            background: var(--primary-dark, #0086cc);
+            transform: translateY(-2px);
+        }
+        
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+            .cookie-consent-content {
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
+            }
+        }
+        
+        /* Light theme adjustments */
+        [data-theme="light"] .cookie-consent {
+            background: rgba(255, 255, 255, 0.95);
+            border-top-color: #e0e0e0;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        [data-theme="light"] .cookie-consent-text h4 {
+            color: #333;
+        }
+        
+        [data-theme="light"] .cookie-consent-text p {
+            color: #666;
+        }
+    </style>
     
     <!-- Mouse Follower Elements -->
     <div class="mouse-follower" id="mouseFollower"></div>
