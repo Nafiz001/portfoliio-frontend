@@ -11,6 +11,13 @@ public partial class _Default : System.Web.UI.Page
 
     protected void Page_Load(object sender, EventArgs e)
     {
+        // Check for success message from redirect (only once per session)
+        if (Request.QueryString["message"] == "sent" && Session["MessageShown"] == null)
+        {
+            ClientScript.RegisterStartupScript(this.GetType(), "alert", "alert('Message sent successfully!');", true);
+            Session["MessageShown"] = "true";
+        }
+        
         if (!IsPostBack)
         {
             // Track visitor and handle cookies
@@ -182,14 +189,8 @@ public partial class _Default : System.Web.UI.Page
                 con.Open();
                 cmd.ExecuteNonQuery();
                 
-                // Clear form
-                txtName.Text = "";
-                txtEmail.Text = "";
-                txtSubject.Text = "";
-                txtMessage.Text = "";
-                
-                // Show success message
-                ClientScript.RegisterStartupScript(this.GetType(), "alert", "alert('Message sent successfully!');", true);
+                // Redirect to prevent form resubmission on refresh
+                Response.Redirect("Default.aspx?message=sent");
             }
         }
         catch (Exception ex)

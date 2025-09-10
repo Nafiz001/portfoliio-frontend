@@ -612,28 +612,6 @@
             });
         });
 
-        // Theme functionality
-        function initializeTheme() {
-            const savedTheme = localStorage.getItem('theme') || 'dark';
-            setTheme(savedTheme);
-        }
-
-        function setTheme(theme) {
-            document.documentElement.setAttribute('data-theme', theme);
-            localStorage.setItem('theme', theme);
-            
-            const themeToggle = document.querySelector('.theme-toggle');
-            if (themeToggle) {
-                themeToggle.innerHTML = theme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
-            }
-        }
-
-        function toggleTheme() {
-            const currentTheme = localStorage.getItem('theme') || 'dark';
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            setTheme(newTheme);
-        }
-
         // Smooth scrolling for navigation
         function initSmoothScrolling() {
             const anchors = document.querySelectorAll('a[href^="#"]');
@@ -654,15 +632,8 @@
 
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', function() {
-            initializeTheme();
             initSmoothScrolling();
             initMouseFollower(); // Add mouse follower
-            
-            // Add theme toggle event listener
-            const themeToggle = document.querySelector('.theme-toggle');
-            if (themeToggle) {
-                themeToggle.addEventListener('click', toggleTheme);
-            }
         });
 
         // Mouse follower functionality

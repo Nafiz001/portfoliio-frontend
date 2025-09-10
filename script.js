@@ -124,8 +124,6 @@ class PortfolioAPI {
 const navbar = document.getElementById('navbar');
 const hamburger = document.getElementById('hamburger');
 const navMenu = document.getElementById('nav-menu');
-const themeToggle = document.getElementById('themeToggle');
-const themeIcon = document.getElementById('themeIcon');
 
 // Theme functionality
 function initializeTheme() {
@@ -137,11 +135,15 @@ function setTheme(theme) {
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('theme', theme);
     
-    if (themeIcon) {
-        if (theme === 'light') {
-            themeIcon.className = 'fas fa-moon';
-        } else {
-            themeIcon.className = 'fas fa-sun';
+    const themeToggle = document.getElementById('themeToggle');
+    if (themeToggle) {
+        const icon = themeToggle.querySelector('i');
+        if (icon) {
+            if (theme === 'light') {
+                icon.className = 'fas fa-moon';
+            } else {
+                icon.className = 'fas fa-sun';
+            }
         }
     }
 }
@@ -152,10 +154,15 @@ function toggleTheme() {
     setTheme(newTheme);
 }
 
-// Theme toggle event listener
-if (themeToggle) {
-    themeToggle.addEventListener('click', toggleTheme);
-}
+// Initialize theme and add event listener when DOM is ready
+document.addEventListener('DOMContentLoaded', function() {
+    initializeTheme();
+    
+    const themeToggle = document.getElementById('themeToggle');
+    if (themeToggle) {
+        themeToggle.addEventListener('click', toggleTheme);
+    }
+});
 
 // Navigation functionality
 if (hamburger) {
